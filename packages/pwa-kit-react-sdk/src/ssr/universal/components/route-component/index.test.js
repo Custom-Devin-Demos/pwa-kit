@@ -267,6 +267,8 @@ describe('The routeComponent component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('props').innerHTML).toEqual(
                 JSON.stringify({
+                    location: {pathname: '/', search: '', hash: ''},
+                    match: {params: {}},
                     foo: 'bar',
                     isLoading: false
                 })
@@ -351,7 +353,12 @@ describe('Uses preloaded props on initial clientside page load', () => {
     test('Uses preloadedProps when hydrating', async () => {
         global.__HYDRATING__ = true
         const preloadedProps = {foo: 'bar'}
-        const expectedPreloadedChildProps = {foo: 'bar', isLoading: false}
+        const expectedPreloadedChildProps = {
+            location: {pathname: '/', search: '', hash: ''},
+            match: {params: {}},
+            foo: 'bar',
+            isLoading: false
+        }
 
         const Mock = (props) => <div data-testid="props">{JSON.stringify(props)}</div>
         Mock.displayName = 'MockComponent'
@@ -376,7 +383,11 @@ describe('Uses preloaded props on initial clientside page load', () => {
     test('Does not use preloadedProps when not hydrating', async () => {
         global.__HYDRATING__ = false
         const preloadedProps = {foo: 'bar'}
-        const expectedNotPreloadedChildProps = {isLoading: false}
+        const expectedNotPreloadedChildProps = {
+            location: {pathname: '/', search: '', hash: ''},
+            match: {params: {}},
+            isLoading: false
+        }
 
         const Mock = (props) => <div data-testid="props">{JSON.stringify(props)}</div>
         Mock.displayName = 'MockComponent'

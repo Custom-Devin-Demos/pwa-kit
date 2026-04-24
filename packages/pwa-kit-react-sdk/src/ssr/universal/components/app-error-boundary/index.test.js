@@ -9,7 +9,6 @@ import React from 'react'
 import {act, render, screen} from '@testing-library/react'
 import {AppErrorBoundaryWithoutRouter as AppErrorBoundary} from './index'
 import * as errors from '../../errors'
-import sinon from 'sinon'
 
 describe('AppErrorBoundary', () => {
     const cases = [
@@ -66,11 +65,10 @@ describe('AppErrorBoundary', () => {
             afterErrorAssertions()
         })
 
-        test(`Watches history, when provided (variation: ${variation})`, () => {
-            const history = {listen: sinon.stub().returns(sinon.stub())}
+        test(`Clears error on location change (variation: ${variation})`, () => {
             const ref = React.createRef()
-            render(
-                <AppErrorBoundary ref={ref} history={history}>
+            const {rerender} = render(
+                <AppErrorBoundary ref={ref} location={{pathname: '/page1'}}>
                     <>{content}</>
                 </AppErrorBoundary>
             )
@@ -80,7 +78,14 @@ describe('AppErrorBoundary', () => {
             })
             expect(screen.queryByText(content)).toBeNull()
             afterErrorAssertions()
-            expect(history.listen.called).toBe(true)
+
+            // Simulate a location change - error should clear
+            rerender(
+                <AppErrorBoundary ref={ref} location={{pathname: '/page2'}}>
+                    <>{content}</>
+                </AppErrorBoundary>
+            )
+            expect(screen.getByText(content)).toBeInTheDocument()
         })
     })
 
@@ -88,13 +93,5 @@ describe('AppErrorBoundary', () => {
         const error = new Error('test')
         const result = AppErrorBoundary.getDerivedStateFromError(error)
         expect(result.error.message).toEqual(error.toString())
-    })
-
-    test(`componentWillUnmount unlistens to history`, () => {
-        const unlisten = jest.fn()
-        const history = {listen: jest.fn().mockReturnValue(unlisten)}
-        const wrapper = render(<AppErrorBoundary history={history}>test</AppErrorBoundary>)
-        wrapper.unmount()
-        expect(unlisten).toHaveBeenCalled()
     })
 })

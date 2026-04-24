@@ -65,7 +65,7 @@ jest.mock('../universal/routes', () => {
     const PropTypes = require('prop-types')
     const errors = require('../universal/errors')
     const RedirectWithStatus = require('../universal/components/redirect-with-status').default
-    const {Navigate} = require('react-router-dom')
+    // Navigate is used via RedirectWithStatus
     const {Helmet} = require('react-helmet')
     const {useQuery} = require('@tanstack/react-query')
     const {useServerContext} = require('../universal/hooks')
@@ -186,7 +186,7 @@ jest.mock('../universal/routes', () => {
         }
 
         render() {
-            return <Navigate to="/elsewhere/" replace />
+            return <RedirectWithStatus to="/elsewhere/" />
         }
     }
 
