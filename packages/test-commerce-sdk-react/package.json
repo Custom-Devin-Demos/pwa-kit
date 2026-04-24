@@ -31,7 +31,7 @@
     "internal-lib-build": "3.18.0-dev",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-helmet": "^6.1.0",
+    "react-helmet-async": "^2.0.5",
     "react-router-dom": "^5.3.4",
     "typescript": "4.9.5"
   },

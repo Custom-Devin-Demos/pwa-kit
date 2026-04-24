@@ -8,7 +8,7 @@ import React, {useEffect} from 'react'
 import {render, waitFor} from '@testing-library/react'
 import StorefrontPreview from './storefront-preview'
 import {detectStorefrontPreview} from './utils'
-import {Helmet} from 'react-helmet'
+import {HelmetProvider} from 'react-helmet-async'
 import {mockQueryEndpoint, renderWithProviders} from '../../test-utils'
 import {useCommerceApi, useConfig} from '../../hooks'
 
@@ -64,9 +64,11 @@ describe('Storefront Preview Component', function () {
     test('Renders children when enabled', () => {
         const MockComponent = () => <div data-testid="mockComponent">Mock Component</div>
         const wrapper = render(
-            <StorefrontPreview enabled={true} getToken={() => 'my-token'}>
-                <MockComponent />
-            </StorefrontPreview>
+            <HelmetProvider>
+                <StorefrontPreview enabled={true} getToken={() => 'my-token'}>
+                    <MockComponent />
+                </StorefrontPreview>
+            </HelmetProvider>
         )
         expect(wrapper.getByTestId('mockComponent')).toBeDefined()
     })
@@ -74,44 +76,53 @@ describe('Storefront Preview Component', function () {
     test('Renders children when disabled', () => {
         const MockComponent = () => <div data-testid="mockComponent">Mock Component</div>
         const wrapper = render(
-            <StorefrontPreview enabled={false}>
-                <MockComponent />
-            </StorefrontPreview>
+            <HelmetProvider>
+                <StorefrontPreview enabled={false}>
+                    <MockComponent />
+                </StorefrontPreview>
+            </HelmetProvider>
         )
         expect(wrapper.getByTestId('mockComponent')).toBeDefined()
     })
 
     test('not renders nothing when enabled is off', async () => {
-        render(<StorefrontPreview enabled={false} />)
-        const helmet = Helmet.peek()
+        render(
+            <HelmetProvider>
+                <StorefrontPreview enabled={false} />
+            </HelmetProvider>
+        )
         await waitFor(() => {
-            expect(helmet).toBeUndefined()
+            expect(document.querySelectorAll('script[data-rh="true"]')).toHaveLength(0)
         })
     })
     test('renders script tag when enabled is on but host is not trusted', async () => {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(false)
 
-        render(<StorefrontPreview getToken={() => undefined} />)
-        // this will return all the markup assigned to helmet
-        // which will get rendered inside head.
-        const helmet = Helmet.peek()
+        render(
+            <HelmetProvider>
+                <StorefrontPreview getToken={() => undefined} />
+            </HelmetProvider>
+        )
         await waitFor(() => {
-            expect(helmet).toBeUndefined()
+            expect(document.querySelectorAll('script[data-rh="true"]')).toHaveLength(0)
         })
     })
     test('renders script tag when enabled is on', async () => {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
-        render(<StorefrontPreview enabled={true} getToken={() => undefined} />)
-        // this will return all the markup assigned to helmet
-        // which will get rendered inside head.
-        const helmet = Helmet.peek()
+        render(
+            <HelmetProvider>
+                <StorefrontPreview enabled={true} getToken={() => undefined} />
+            </HelmetProvider>
+        )
         await waitFor(() => {
-            expect(helmet.scriptTags[0].src).toBe(
+            const scripts = document.querySelectorAll('script[data-rh="true"]')
+            expect(scripts).toHaveLength(1)
+            expect(scripts[0].getAttribute('src')).toBe(
                 'https://runtime.commercecloud.com/cc/b2c/preview/preview.client.js'
             )
-            expect(helmet.scriptTags[0].async).toBe(true)
-            expect(helmet.scriptTags[0].type).toBe('text/javascript')
+            expect(scripts[0].getAttribute('async')).toBe('true')
+            expect(scripts[0].getAttribute('type')).toBe('text/javascript')
         })
     })
 
@@ -119,11 +130,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                onContextChange={() => {}}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    onContextChange={() => {}}
+                />
+            </HelmetProvider>
         )
         expect(window.STOREFRONT_PREVIEW?.getToken).toBeDefined()
         expect(window.STOREFRONT_PREVIEW?.onContextChange).toBeDefined()
@@ -135,11 +148,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => '/mybase'}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => '/mybase'}
+                />
+            </HelmetProvider>
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/mybase/product/123', 'push')
@@ -154,11 +169,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => '/mybase'}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => '/mybase'}
+                />
+            </HelmetProvider>
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/other/product/123', 'push')
@@ -169,11 +186,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => '/shop'}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => '/shop'}
+                />
+            </HelmetProvider>
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/shopping/cart', 'push')
@@ -184,11 +203,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => '/mybase'}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => '/mybase'}
+                />
+            </HelmetProvider>
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/mybase', 'push')
@@ -199,11 +220,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => '/mybase'}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => '/mybase'}
+                />
+            </HelmetProvider>
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.(
@@ -217,11 +240,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => ''}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => ''}
+                />
+            </HelmetProvider>
         )
 
         // Runtime Admin sends /test/__pwa-kit/refresh but React Router has no basename
@@ -236,11 +261,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => ''}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => ''}
+                />
+            </HelmetProvider>
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.(
@@ -257,11 +284,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => '/test'}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => '/test'}
+                />
+            </HelmetProvider>
         )
 
         // Runtime Admin sends /test/__pwa-kit/refresh, normalizePwaKitPath strips to
@@ -278,11 +307,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => ''}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => ''}
+                />
+            </HelmetProvider>
         )
 
         // Path already starts with /__pwa-kit/ — no prefix to strip
@@ -297,11 +328,13 @@ describe('Storefront Preview Component', function () {
         ;(detectStorefrontPreview as jest.Mock).mockReturnValue(true)
 
         render(
-            <StorefrontPreview
-                enabled={true}
-                getToken={() => 'my-token'}
-                getBasePath={() => ''}
-            />
+            <HelmetProvider>
+                <StorefrontPreview
+                    enabled={true}
+                    getToken={() => 'my-token'}
+                    getBasePath={() => ''}
+                />
+            </HelmetProvider>
         )
 
         // Regular navigation paths should pass through untouched

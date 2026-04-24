@@ -15,6 +15,7 @@ import {
 } from '@tanstack/react-query'
 import nock from 'nock'
 import CommerceApiProvider, {CommerceApiProviderProps} from './provider'
+import {HelmetProvider} from 'react-helmet-async'
 import userEvent from '@testing-library/user-event'
 
 // Note: this host does NOT exist
@@ -52,11 +53,13 @@ type TestProviderProps = Partial<CommerceApiProviderProps & {queryClient: QueryC
 const TestProviders = (props: TestProviderProps) => {
     const queryClient = props.queryClient || createQueryClient()
     return (
-        <QueryClientProvider client={queryClient}>
-            <CommerceApiProvider {...DEFAULT_TEST_CONFIG} {...props}>
-                {props.children}
-            </CommerceApiProvider>
-        </QueryClientProvider>
+        <HelmetProvider>
+            <QueryClientProvider client={queryClient}>
+                <CommerceApiProvider {...DEFAULT_TEST_CONFIG} {...props}>
+                    {props.children}
+                </CommerceApiProvider>
+            </QueryClientProvider>
+        </HelmetProvider>
     )
 }
 

@@ -8,6 +8,10 @@ const base = require('@salesforce/pwa-kit-dev/configs/jest/jest.config.js')
 
 module.exports = {
     ...base,
+    moduleNameMapper: {
+        ...base.moduleNameMapper,
+        '^react-helmet-async$': '<rootDir>/node_modules/react-helmet-async/lib/index.js'
+    },
     coverageThreshold: {
         global: {
             branches: 0,

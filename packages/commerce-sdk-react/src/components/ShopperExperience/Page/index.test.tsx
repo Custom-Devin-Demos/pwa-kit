@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {render} from '@testing-library/react'
+import {render, waitFor} from '@testing-library/react'
 import Page from './index'
-import {Helmet} from 'react-helmet'
+import {HelmetProvider} from 'react-helmet-async'
 
 const SAMPLE_PAGE = {
     id: 'samplepage',
@@ -67,23 +67,22 @@ const SAMPLE_PAGE = {
     ]
 }
 
-test('Page renders without errors', () => {
-    const {container} = render(<Page page={SAMPLE_PAGE} components={{}} />)
+test('Page renders without errors', async () => {
+    const {container} = render(
+        <HelmetProvider>
+            <Page page={SAMPLE_PAGE} components={{}} />
+        </HelmetProvider>
+    )
 
     // Page is in document.
     expect(container.querySelector('[id=samplepage]')).toBeInTheDocument()
 
     // Meta data and title are set
-    const helmet = Helmet.peek()
-    expect(helmet.title).toBe('title')
-    expect(
-        helmet.metaTags.find(
-            ({name, content}) => name === 'description' && content === 'description'
-        )
-    ).toBeTruthy()
-    expect(
-        helmet.metaTags.find(({name, content}) => name === 'keywords' && content === 'keywords')
-    ).toBeTruthy()
+    await waitFor(() => {
+        expect(document.title).toBe('title')
+    })
+    expect(document.querySelector('meta[name="description"][content="description"]')).toBeTruthy()
+    expect(document.querySelector('meta[name="keywords"][content="keywords"]')).toBeTruthy()
 
     // Regions are in document.
     expect(container.querySelectorAll('.region')?.length).toBe(3)

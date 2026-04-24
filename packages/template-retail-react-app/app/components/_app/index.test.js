@@ -7,7 +7,6 @@
 
 import React from 'react'
 import {screen, waitFor} from '@testing-library/react'
-import {Helmet} from 'react-helmet'
 import {rest} from 'msw'
 
 import App from '@salesforce/retail-react-app/app/components/_app/index.jsx'
@@ -107,7 +106,7 @@ describe('App', () => {
         })
     })
 
-    test('The localized hreflang links exist in the html head', () => {
+    test('The localized hreflang links exist in the html head', async () => {
         useMultiSite.mockImplementation(() => resultUseMultiSite)
         renderWithProviders(
             <App targetLocale={DEFAULT_LOCALE} defaultLocale={DEFAULT_LOCALE} messages={messages} />
@@ -117,17 +116,25 @@ describe('App', () => {
         const hrefLangLocales = mockConfig.app.sites[0].l10n.supportedLocales.map(
             (locale) => locale.id
         )
-        const helmet = Helmet.peek()
-        const hreflangLinks = helmet.linkTags.filter((link) => link.rel === 'alternate')
-        const hasGeneralLocale = ({hrefLang}) => hrefLang === DEFAULT_LOCALE.slice(0, 2)
+        // react-helmet-async defers DOM updates via requestAnimationFrame
+        await waitFor(() => {
+            expect(
+                document.querySelectorAll('link[rel="alternate"][data-rh="true"]').length
+            ).toBeGreaterThan(0)
+        })
+        const hreflangLinks = document.querySelectorAll('link[rel="alternate"][data-rh="true"]')
+        const hasGeneralLocale = (link) =>
+            link.getAttribute('hreflang') === DEFAULT_LOCALE.slice(0, 2)
 
         hrefLangLocales.forEach((supportedLocale) => {
             expect(
-                hreflangLinks.some(
-                    (link) => link.hrefLang.toLowerCase() === supportedLocale.toLowerCase()
+                Array.from(hreflangLinks).some(
+                    (link) =>
+                        link.getAttribute('hreflang')?.toLowerCase() ===
+                        supportedLocale.toLowerCase()
                 )
             ).toBe(true)
-            expect(hreflangLinks.some((link) => hasGeneralLocale(link))).toBe(true)
+            expect(Array.from(hreflangLinks).some((link) => hasGeneralLocale(link))).toBe(true)
         })
 
         // localeRefs takes locale alias into consideration
@@ -136,11 +143,15 @@ describe('App', () => {
         )
 
         localeRefs.forEach((localeRef) => {
-            expect(hreflangLinks.some((link) => link.href.includes(localeRef))).toBe(true)
+            expect(
+                Array.from(hreflangLinks).some((link) =>
+                    link.getAttribute('href')?.includes(localeRef)
+                )
+            ).toBe(true)
             // expecting href does not contain search query params in the href since it is a canonical url
             expect(
-                hreflangLinks.some((link) => {
-                    const urlObj = new URL(link.href)
+                Array.from(hreflangLinks).some((link) => {
+                    const urlObj = new URL(link.getAttribute('href'), 'http://localhost')
                     return urlObj.search.length > 0
                 })
             ).toBe(false)
@@ -149,8 +160,10 @@ describe('App', () => {
         // `length + 2` because one for a general locale and the other with x-default value
         expect(hreflangLinks).toHaveLength(resultUseMultiSite.site.l10n.supportedLocales.length + 2)
 
-        expect(hreflangLinks.some((link) => hasGeneralLocale(link))).toBe(true)
-        expect(hreflangLinks.some((link) => link.hrefLang === 'x-default')).toBe(true)
+        expect(Array.from(hreflangLinks).some((link) => hasGeneralLocale(link))).toBe(true)
+        expect(
+            Array.from(hreflangLinks).some((link) => link.getAttribute('hreflang') === 'x-default')
+        ).toBe(true)
     })
 
     test('App component updates the basket with correct currency and customer email', async () => {

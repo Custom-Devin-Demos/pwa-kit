@@ -29,14 +29,14 @@ import PropTypes from 'prop-types'
  * @param {object} [props.bodyAttributes] - The attributes to be applied to the documents body tag.
  *      <br/>
  *      <br/>
- *      <i>These are set by using `react-helmet`. Please refer to their {@link https://github.com/nfl/react-helmet/tree/5.2.0#readme|docs}
+ *      <i>These are set by using `react-helmet-async`. Please refer to their {@link https://github.com/staylor/react-helmet-async#readme|docs}
  *      for its usage.</i>
  * @param {Array.<Object>} props.head - The elements to be placed inside the documents head tag.
  * @param {string} [props.html] - The HTML to be rendered in your documents html tag.
  * @param {object} [props.htmlAttributes] - The attributes to be applied to the documents html tag.
  *      <br/>
  *      <br/>
- *      <i>These are set by using `react-helmet`. Please refer to their {@link https://github.com/nfl/react-helmet/tree/5.2.0#readme|docs}
+ *      <i>These are set by using `react-helmet-async`. Please refer to their {@link https://github.com/staylor/react-helmet-async#readme|docs}
  *      for its usage.</i>
  */
 const Document = (props) => {

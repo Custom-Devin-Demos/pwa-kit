@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {Helmet} from 'react-helmet'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
+import {waitFor} from '@testing-library/react'
 import HomePage from '@salesforce/retail-react-app/app/pages/home'
 import {rest} from 'msw'
 import {mockProductSearch} from '@salesforce/retail-react-app/app/mocks/mock-data'
@@ -27,12 +27,14 @@ test('Home Page renders without errors', async () => {
     expect(getByTestId('home-page')).toBeInTheDocument()
     expect(typeof HomePage.getTemplateName()).toBe('string')
 
-    const helmet = Helmet.peek()
-    expect(helmet.linkTags).toHaveLength(1)
-    expect(helmet.linkTags[0]).toStrictEqual({
-        as: 'image',
-        href: '/mobify/bundle/development/static/img/hero.png',
-        rel: 'preload',
-        fetchPriority: 'high'
+    await waitFor(() => {
+        expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(1)
     })
+    const preloadLinks = document.querySelectorAll('link[data-rh="true"]')
+    expect(preloadLinks[0].getAttribute('as')).toBe('image')
+    expect(preloadLinks[0].getAttribute('href')).toBe(
+        '/mobify/bundle/development/static/img/hero.png'
+    )
+    expect(preloadLinks[0].getAttribute('rel')).toBe('preload')
+    expect(preloadLinks[0].getAttribute('fetchpriority')).toBe('high')
 })

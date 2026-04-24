@@ -14,7 +14,7 @@ import {
     Stack,
     Text
 } from '@salesforce/retail-react-app/app/components/shared/ui'
-import {Helmet} from 'react-helmet'
+import {Helmet} from 'react-helmet-async'
 import {useIntl, FormattedMessage} from 'react-intl'
 import {useServerContext} from '@salesforce/pwa-kit-react-sdk/ssr/universal/hooks'
 import {SearchIcon} from '@salesforce/retail-react-app/app/components/icons'

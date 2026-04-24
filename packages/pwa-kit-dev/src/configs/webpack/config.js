@@ -77,7 +77,7 @@ export const DEPS_TO_DEDUPE = [
     'react',
     'react-router-dom',
     'react-dom',
-    'react-helmet',
+    'react-helmet-async',
     'webpack-hot-middleware',
     'react-intl',
     '@chakra-ui/icons',

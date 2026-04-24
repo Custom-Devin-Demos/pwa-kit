@@ -6,10 +6,10 @@
  */
 /* eslint-disable jest/no-conditional-expect */
 import React from 'react'
-import {Helmet} from 'react-helmet'
 import Image from '@salesforce/retail-react-app/app/components/image/index'
 import {Img} from '@salesforce/retail-react-app/app/components/shared/ui'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
+import {waitFor} from '@testing-library/react'
 import {isServer} from '@salesforce/retail-react-app/app/components/image/utils'
 
 jest.mock('@salesforce/retail-react-app/app/components/image/utils', () => ({
@@ -72,25 +72,25 @@ describe('Image Component', () => {
     })
 
     describe('loading="eager"', () => {
-        test('renders an image using the default "high" fetch priority', () => {
+        test('renders an image using the default "high" fetch priority', async () => {
             const {getAllByTitle} = renderWithProviders(<Image {...imageProps} loading={'eager'} />)
             const elements = getAllByTitle(imageProps.title)
             expect(elements).toHaveLength(1)
             expect(elements[0]).toHaveAttribute('fetchpriority', 'high')
 
-            const helmet = Helmet.peek()
-            expect(helmet.linkTags).toHaveLength(1)
-            expect(helmet.linkTags[0]).toStrictEqual({
-                as: 'image',
-                href: imageProps.src,
-                rel: 'preload',
-                fetchPriority: 'high'
+            await waitFor(() => {
+                expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(1)
             })
+            const preloadLinks = document.querySelectorAll('link[data-rh="true"]')
+            expect(preloadLinks[0].getAttribute('as')).toBe('image')
+            expect(preloadLinks[0].getAttribute('href')).toBe(imageProps.src)
+            expect(preloadLinks[0].getAttribute('rel')).toBe('preload')
+            expect(preloadLinks[0].getAttribute('fetchpriority')).toBe('high')
         })
 
         test.each(['high', 'low', 'auto'])(
             'renders an image using an explicit "%s" fetch priority',
-            (fetchPriority) => {
+            async (fetchPriority) => {
                 const {getAllByTitle} = renderWithProviders(
                     <Image {...imageProps} loading={'eager'} fetchPriority={fetchPriority} />
                 )
@@ -98,17 +98,17 @@ describe('Image Component', () => {
                 expect(elements).toHaveLength(1)
                 expect(elements[0]).toHaveAttribute('fetchpriority', fetchPriority)
 
-                const helmet = Helmet.peek()
                 if (fetchPriority === 'high') {
-                    expect(helmet.linkTags).toHaveLength(1)
-                    expect(helmet.linkTags[0]).toStrictEqual({
-                        as: 'image',
-                        href: imageProps.src,
-                        rel: 'preload',
-                        fetchPriority: 'high'
+                    await waitFor(() => {
+                        expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(1)
                     })
+                    const preloadLinks = document.querySelectorAll('link[data-rh="true"]')
+                    expect(preloadLinks[0].getAttribute('as')).toBe('image')
+                    expect(preloadLinks[0].getAttribute('href')).toBe(imageProps.src)
+                    expect(preloadLinks[0].getAttribute('rel')).toBe('preload')
+                    expect(preloadLinks[0].getAttribute('fetchpriority')).toBe('high')
                 } else {
-                    expect(helmet.linkTags).toStrictEqual([])
+                    expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(0)
                 }
             }
         )
@@ -120,10 +120,10 @@ describe('Image Component', () => {
             const elements = getAllByTitle(imageProps.title)
             expect(elements).toHaveLength(1)
             expect(elements[0]).toHaveAttribute('fetchpriority', 'auto')
-            expect(Helmet.peek().linkTags).toStrictEqual([])
+            expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(0)
         })
 
-        test('renders an explicitly given image component without modifications', () => {
+        test('renders an explicitly given image component without modifications', async () => {
             const {getAllByTitle} = renderWithProviders(
                 <Image as={Img} {...imageProps} loading={'eager'} />
             )
@@ -131,14 +131,14 @@ describe('Image Component', () => {
             expect(elements).toHaveLength(1)
             expect(elements[0]).toHaveAttribute('fetchpriority', 'high')
 
-            const helmet = Helmet.peek()
-            expect(helmet.linkTags).toHaveLength(1)
-            expect(helmet.linkTags[0]).toStrictEqual({
-                as: 'image',
-                href: imageProps.src,
-                rel: 'preload',
-                fetchPriority: 'high'
+            await waitFor(() => {
+                expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(1)
             })
+            const preloadLinks = document.querySelectorAll('link[data-rh="true"]')
+            expect(preloadLinks[0].getAttribute('as')).toBe('image')
+            expect(preloadLinks[0].getAttribute('href')).toBe(imageProps.src)
+            expect(preloadLinks[0].getAttribute('rel')).toBe('preload')
+            expect(preloadLinks[0].getAttribute('fetchpriority')).toBe('high')
         })
 
         test('renders an image on the client', () => {
@@ -147,7 +147,7 @@ describe('Image Component', () => {
             const elements = getAllByTitle(imageProps.title)
             expect(elements).toHaveLength(1)
             expect(elements[0]).toHaveAttribute('fetchpriority', 'high')
-            expect(Helmet.peek().linkTags).toStrictEqual([])
+            expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(0)
         })
     })
 })

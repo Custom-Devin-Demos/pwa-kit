@@ -9,7 +9,7 @@ import React, {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
 import {useHistory, useLocation, useParams} from 'react-router-dom'
 import {FormattedMessage, useIntl} from 'react-intl'
-import {Helmet} from 'react-helmet'
+import {Helmet} from 'react-helmet-async'
 import {
     useCategory,
     useCustomerId,

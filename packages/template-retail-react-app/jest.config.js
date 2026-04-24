@@ -13,6 +13,7 @@ module.exports = {
     moduleNameMapper: {
         ...base.moduleNameMapper,
         '^react$': '<rootDir>/node_modules/react/index.js',
+        '^react-helmet-async$': '<rootDir>/node_modules/react-helmet-async/lib/index.js',
         '^react-router-dom(.*)$': '<rootDir>/node_modules/react-router-dom/index.js',
         '^@salesforce/retail-react-app(.*)$': '<rootDir>$1',
         '^@tanstack/react-query$':
@@ -34,7 +35,9 @@ module.exports = {
         '^@salesforce/storefront-next-runtime/design/styles\\.css$':
             '<rootDir>/app/mocks/empty-mock.js'
     },
-    transformIgnorePatterns: ['/node_modules/(?!@salesforce/cc-datacloud-typescript|@salesforce/storefront-next-runtime)'],
+    transformIgnorePatterns: [
+        '/node_modules/(?!@salesforce/cc-datacloud-typescript|@salesforce/storefront-next-runtime)'
+    ],
     setupFilesAfterEnv: [path.join(__dirname, 'jest-setup.js')],
     collectCoverageFrom: [
         'app/**/*.{js,jsx}',
