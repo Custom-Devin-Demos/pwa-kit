@@ -23,7 +23,6 @@ const MockComponent = () => {
 
 describe('The usePageUrls', () => {
     test('returns an array of urls, one values for each page with the correct offset value.', () => {
-        
         history.push('/test/path?limit=25')
 
         const wrapper = render(

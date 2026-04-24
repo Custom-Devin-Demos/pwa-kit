@@ -14,8 +14,6 @@ import {
 import ResetPassword from '.'
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'
 
-
-
 const MockedComponent = () => {
     return (
         <div>

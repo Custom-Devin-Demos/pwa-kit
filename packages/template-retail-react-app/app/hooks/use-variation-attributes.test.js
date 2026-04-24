@@ -147,7 +147,6 @@ const MultiVariantTestComponent = () => {
 
 describe('The useVariationAttributes', () => {
     test('returns variation attributes decorated with hrefs and images.', () => {
-        
         history.push('/test/path?color=blue&size=2')
         const wrapper = render(
             <MemoryRouter>
@@ -161,7 +160,6 @@ describe('The useVariationAttributes', () => {
 
     describe('Hook Level Behavior (No Filtering)', () => {
         test('useVariationAttributes shows all variants regardless of bonus product context', () => {
-            
             history.push('/test/path')
 
             const wrapper = render(
@@ -180,7 +178,6 @@ describe('The useVariationAttributes', () => {
         })
 
         test('useVariationAttributes maintains original interface without bonus product parameters', () => {
-            
             history.push('/test/path')
 
             // Test that the hook works without bonus product parameters

@@ -39,9 +39,7 @@ describe('Image Gallery Component', () => {
     })
 
     test('can select thumbnail image with enter keyboard', async () => {
-        renderWithProviders(
-            <MockComponent imageGroups={data} selectedVariationAttributes={{}} />
-        )
+        renderWithProviders(<MockComponent imageGroups={data} selectedVariationAttributes={{}} />)
         const thumbnailImages = screen.getAllByTestId('image-gallery-thumbnails')
         const lastThumbnailImage = thumbnailImages[thumbnailImages.length - 1]
         lastThumbnailImage.focus()
@@ -56,9 +54,7 @@ describe('Image Gallery Component', () => {
     })
 
     test('can select thumbnail image by clicking on the image', async () => {
-        renderWithProviders(
-            <MockComponent imageGroups={data} selectedVariationAttributes={{}} />
-        )
+        renderWithProviders(<MockComponent imageGroups={data} selectedVariationAttributes={{}} />)
         const thumbnailImages = screen.getAllByTestId('image-gallery-thumbnails')
         const lastThumbnailImage = thumbnailImages[thumbnailImages.length - 1]
 

@@ -38,7 +38,6 @@ MockComponent.propTypes = {
 
 describe('The useVariationParams', () => {
     test('returns correct params when there are no non-product params in the url.', () => {
-        
         history.push('/test/path?color=blue&size=2')
 
         const wrapper = render(
@@ -51,7 +50,6 @@ describe('The useVariationParams', () => {
     })
 
     test('returns correct params when there are non-product params in the url.', () => {
-        
         history.push('/test/path?color=blue&size=2&nonproductattribute=true')
 
         const wrapper = render(
@@ -64,7 +62,6 @@ describe('The useVariationParams', () => {
     })
 
     test('returns correct params when there is only a subset product params in the url.', () => {
-        
         history.push('/test/path?color=blue')
 
         const wrapper = render(
@@ -77,7 +74,6 @@ describe('The useVariationParams', () => {
     })
 
     test('uses controlled values instead of URL params when provided (controlled mode)', () => {
-        
         history.push('/test/path?color=blue&size=M')
 
         const controlledValues = {color: 'red', size: 'L'}
@@ -93,7 +89,6 @@ describe('The useVariationParams', () => {
     })
 
     test('ignores URL params completely in controlled mode', () => {
-        
         history.push('/test/path?color=blue&size=M&extra=ignored')
 
         const controlledValues = {size: 'XL'}
@@ -109,7 +104,6 @@ describe('The useVariationParams', () => {
     })
 
     test('returns empty object when controlled values is null (URL mode)', () => {
-        
         history.push('/test/path')
 
         const wrapper = render(

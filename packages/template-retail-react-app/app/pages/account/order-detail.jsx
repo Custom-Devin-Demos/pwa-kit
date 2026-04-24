@@ -263,7 +263,7 @@ const AccountOrderDetail = () => {
                         onClick={(e) => {
                             e.preventDefault()
                             navigate(-1)
-                        }
+                        }}
                     >
                         <FormattedMessage
                             defaultMessage="Back to Order History"

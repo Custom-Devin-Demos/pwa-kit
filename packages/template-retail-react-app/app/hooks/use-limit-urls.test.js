@@ -24,7 +24,6 @@ const MockComponent = () => {
 
 describe('The useLimitUrls', () => {
     test('returns an array of urls, one values for each limit value.', () => {
-        
         history.push('/test/path')
 
         const wrapper = render(

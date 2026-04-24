@@ -45,7 +45,6 @@ describe('useShopperContextSearchParams', () => {
     }
 
     test('does not create/update the shopper context when no shopper context search params are present', () => {
-        
         history.push('/test/path')
         useShopperContext.mockReturnValue({data: undefined, isLoading: false})
         renderWithProviders(
@@ -59,7 +58,6 @@ describe('useShopperContextSearchParams', () => {
     })
 
     test('does not create/update the shopper context when isLoading is true', () => {
-        
         history.push('/test/path')
         useShopperContext.mockReturnValue({data: undefined, isLoading: true})
         renderWithProviders(
@@ -73,7 +71,6 @@ describe('useShopperContextSearchParams', () => {
     })
 
     test('does not create/update the shopper context when current the shopper context deep equals the updateShopperContextObj', () => {
-        
         history.push('/test/path/?sourceCode=instagram&city=Toronto')
         useShopperContext.mockReturnValue({
             data: {sourceCode: 'instagram', geoLocation: {city: 'Toronto'}},
@@ -90,7 +87,6 @@ describe('useShopperContextSearchParams', () => {
     })
 
     test('creates shopper context when shopper context is undefined', () => {
-        
         history.push('/test/path/?sourceCode=instagram')
         useShopperContext.mockReturnValue({data: undefined, isLoading: false})
         renderWithProviders(
@@ -105,7 +101,6 @@ describe('useShopperContextSearchParams', () => {
     })
 
     test('updates shopper context when shopper context is an empty object', () => {
-        
         history.push('/test/path/?sourceCode=instagram')
         useShopperContext.mockReturnValue({data: {}, isLoading: false})
         renderWithProviders(
@@ -120,7 +115,6 @@ describe('useShopperContextSearchParams', () => {
     })
 
     test('updates shopper context when shopper context is an object with values', () => {
-        
         history.push('/test/path/?sourceCode=instagram')
         useShopperContext.mockReturnValue({data: {sourceCode: 'facebook'}, isLoading: false})
         renderWithProviders(

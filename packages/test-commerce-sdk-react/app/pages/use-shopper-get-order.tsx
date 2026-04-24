@@ -11,7 +11,7 @@ import {Link, useParams} from 'react-router-dom'
 import Json from '../components/Json'
 
 function UseShopperGetOrder() {
-    const {orderNo}: {orderNo: string} = useParams()
+    const {orderNo} = useParams<{orderNo: string}>()
     const {data, isLoading, error} = useOrder({parameters: {orderNo}})
     if (isLoading) {
         return (

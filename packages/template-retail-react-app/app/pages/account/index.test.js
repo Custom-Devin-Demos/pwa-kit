@@ -34,14 +34,8 @@ jest.mock('@salesforce/commerce-sdk-react', () => ({
 const MockedComponent = () => {
     return (
         <Routes>
-            <Route
-                path={createPathWithDefaults('/account/*')}
-                element={<Account />}
-            />
-            <Route
-                path={createPathWithDefaults('/login')}
-                element={<Login />}
-            />
+            <Route path={createPathWithDefaults('/account/*')} element={<Account />} />
+            <Route path={createPathWithDefaults('/login')} element={<Login />} />
         </Routes>
     )
 }

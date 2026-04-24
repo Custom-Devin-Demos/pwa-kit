@@ -28,7 +28,6 @@ const MockComponent = () => {
 
 describe('The useSearchParams', () => {
     test('returns an object with the default search params when none are present in the url.', () => {
-        
         history.push('/test/path')
 
         const wrapper = render(
@@ -43,7 +42,6 @@ describe('The useSearchParams', () => {
     })
 
     test('returns an object with the parsed search params.', () => {
-        
         history.push(
             '/test/path?limit=25&offset=0&refine=c_refinementColor%3DBlack%7CPurple&sort=best-matches'
         )

@@ -26,7 +26,6 @@ const MockComponent = () => {
 
 describe('The useSortUrls', () => {
     test('returns an array of urls, one values for each sort value.', () => {
-        
         history.push('/test/path')
 
         const wrapper = render(

@@ -24,7 +24,6 @@ afterEach(() => {
 
 describe('useShopperContextSearchParams', () => {
     test('returns an empty object when no search params are present', () => {
-        
         history.push('')
 
         const wrapper = ({children}) => <MemoryRouter>{children}</MemoryRouter>
@@ -33,7 +32,6 @@ describe('useShopperContextSearchParams', () => {
     })
 
     test('returns an empty object when search params not related to shopper context are present', () => {
-        
         history.push('?a=1&b=2&c=3')
 
         const wrapper = ({children}) => <MemoryRouter>{children}</MemoryRouter>
@@ -45,7 +43,6 @@ describe('useShopperContextSearchParams', () => {
         const originalCustomQualifiers = SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers
         SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers = {a: {paramName: 'a'}, b: {paramName: 'b'}}
 
-        
         history.push('?a=1&b=2&c=3')
 
         const wrapper = ({children}) => <MemoryRouter>{children}</MemoryRouter>
@@ -61,7 +58,6 @@ describe('useShopperContextSearchParams', () => {
         SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers = {deviceType: {paramName: 'deviceType'}}
         SHOPPER_CONTEXT_SEARCH_PARAMS.assignmentQualifiers = {storeId: {paramName: 'storeId'}}
 
-        
         history.push(
             // Source code
             '?sourceCode=instagram' +

@@ -52,7 +52,6 @@ const MockComponent = () => {
 
 describe('The useVariant', () => {
     test('returns undefined when a single variant cannot be deduced from the location search params.', () => {
-        
         history.push('/test/path?size=34')
 
         const wrapper = render(
@@ -65,7 +64,6 @@ describe('The useVariant', () => {
     })
 
     test('returns the correct variant when one can be deduced from the location search params.', () => {
-        
         history.push('/test/path?size=34&color=DKL')
 
         const wrapper = render(

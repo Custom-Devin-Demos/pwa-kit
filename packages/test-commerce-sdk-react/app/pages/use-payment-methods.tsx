@@ -10,7 +10,7 @@ import Json from '../components/Json'
 import {useParams} from 'react-router-dom'
 
 function UsePaymentMethods() {
-    const {orderNo}: {orderNo: string} = useParams()
+    const {orderNo} = useParams<{orderNo: string}>()
     const {data, isLoading, error} = usePaymentMethodsForOrder({parameters: {orderNo: orderNo}})
     if (isLoading) {
         return (
