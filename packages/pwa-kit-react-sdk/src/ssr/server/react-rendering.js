@@ -155,10 +155,7 @@ const performRender = async (req, res, next) => {
     let match
 
     routes.some((_route) => {
-        const _match = matchPath(
-            {path: _route.path, end: _route.exact !== false},
-            req.path
-        )
+        const _match = matchPath({path: _route.path, end: _route.exact !== false}, req.path)
         if (_match) {
             match = _match
             route = _route
@@ -281,7 +278,10 @@ const OuterApp = ({req, res, error, App, appState, routes, ssrRedirectContext, l
     return (
         <ServerContext.Provider value={{req, res}}>
             <SSRRedirectContext.Provider value={ssrRedirectContext}>
-                <Router location={`${location.pathname}${location.search || ''}`} basename={routerBasename}>
+                <Router
+                    location={`${location.pathname}${location.search || ''}`}
+                    basename={routerBasename}
+                >
                     <CorrelationIdProvider
                         correlationId={res.locals.requestId}
                         resetOnPageChange={false}

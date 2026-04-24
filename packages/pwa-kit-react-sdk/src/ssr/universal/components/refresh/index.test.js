@@ -7,7 +7,7 @@
 import {useQueryClient} from '@tanstack/react-query'
 import {render, screen, waitFor} from '@testing-library/react'
 import React from 'react'
-import {useNavigate, useLocation} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
 import Refresh from './index'
 import {getRouterBasePath} from '../../utils'
 

@@ -7,13 +7,13 @@
 
 import React from 'react'
 import {render} from '@testing-library/react'
-import {MemoryRouter, Routes, Route} from 'react-router-dom'
+import {MemoryRouter, Routes, Route, useLocation} from 'react-router-dom'
 import {StaticRouter} from 'react-router-dom/server'
 import RedirectWithStatus from './index'
 import {SSRRedirectContext} from '../../contexts'
 
 const LocationDisplay = () => {
-    const location = require('react-router-dom').useLocation()
+    const location = useLocation()
     return <div data-testid="location">{location.pathname}</div>
 }
 
