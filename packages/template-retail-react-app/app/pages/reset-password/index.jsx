@@ -17,7 +17,7 @@ import useNavigation from '@salesforce/retail-react-app/app/hooks/use-navigation
 import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein'
 import useDataCloud from '@salesforce/retail-react-app/app/hooks/use-datacloud'
 import {useLocation} from 'react-router-dom'
-import {useRouteMatch} from 'react-router'
+
 import {usePasswordReset} from '@salesforce/retail-react-app/app/hooks/use-password-reset'
 import {getPasswordResetErrorMessage} from '@salesforce/retail-react-app/app/utils/auth-utils'
 
@@ -28,7 +28,7 @@ const ResetPassword = () => {
     const einstein = useEinstein()
     const dataCloud = useDataCloud()
     const {pathname} = useLocation()
-    const {path} = useRouteMatch()
+    const path = pathname
     const {getPasswordResetToken, resetPasswordLandingPath} = usePasswordReset()
 
     const submitForm = async ({email}) => {

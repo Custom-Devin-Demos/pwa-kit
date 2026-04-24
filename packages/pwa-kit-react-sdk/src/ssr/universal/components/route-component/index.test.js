@@ -65,25 +65,15 @@ jest.mock('../../routes', () => {
 })
 
 // NOTE: `react-router-dom` is being mocked because I was not able to get around the
-// issue where you can't use a `withRoute` HoC outside of a Router component for this
+// issue where you can't use router hooks outside of a Router component for this
 // specific test. TODO: Revisit this, so that we don't have to mock `react-router-dom`
 jest.mock('react-router-dom', () => {
-    const React = require('react')
-    const hoistNonReactStatic = require('hoist-non-react-statics')
-
-    const withRouter = (Wrapped) => {
-        const wrappedComponentName = Wrapped.displayName || Wrapped.name
-        const WithRouter = (props) => <Wrapped {...props} />
-        hoistNonReactStatic(WithRouter, Wrapped)
-        WithRouter.displayName = `withRouter(${wrappedComponentName})`
-
-        return WithRouter
-    }
-
     return {
         __esModule: true,
         default: {},
-        withRouter
+        useLocation: jest.fn(() => ({pathname: '/', search: '', hash: ''})),
+        useParams: jest.fn(() => ({})),
+        useNavigate: jest.fn(() => jest.fn())
     }
 })
 
@@ -277,6 +267,8 @@ describe('The routeComponent component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('props').innerHTML).toEqual(
                 JSON.stringify({
+                    location: {pathname: '/', search: '', hash: ''},
+                    match: {params: {}},
                     foo: 'bar',
                     isLoading: false
                 })
@@ -361,7 +353,12 @@ describe('Uses preloaded props on initial clientside page load', () => {
     test('Uses preloadedProps when hydrating', async () => {
         global.__HYDRATING__ = true
         const preloadedProps = {foo: 'bar'}
-        const expectedPreloadedChildProps = {foo: 'bar', isLoading: false}
+        const expectedPreloadedChildProps = {
+            location: {pathname: '/', search: '', hash: ''},
+            match: {params: {}},
+            foo: 'bar',
+            isLoading: false
+        }
 
         const Mock = (props) => <div data-testid="props">{JSON.stringify(props)}</div>
         Mock.displayName = 'MockComponent'
@@ -386,7 +383,11 @@ describe('Uses preloaded props on initial clientside page load', () => {
     test('Does not use preloadedProps when not hydrating', async () => {
         global.__HYDRATING__ = false
         const preloadedProps = {foo: 'bar'}
-        const expectedNotPreloadedChildProps = {isLoading: false}
+        const expectedNotPreloadedChildProps = {
+            location: {pathname: '/', search: '', hash: ''},
+            match: {params: {}},
+            isLoading: false
+        }
 
         const Mock = (props) => <div data-testid="props">{JSON.stringify(props)}</div>
         Mock.displayName = 'MockComponent'

@@ -56,26 +56,22 @@ const PageNotFound = loadable(() => import('./pages/page-not-found'))
 export const routes = [
     {
         path: '/',
-        component: Home,
-        exact: true
+        component: Home
     },
     {
         path: '/login',
-        component: Login,
-        exact: true
+        component: Login
     },
     {
         path: '/registration',
-        component: Registration,
-        exact: true
+        component: Registration
     },
     {
         path: '/reset-password',
-        component: ResetPassword,
-        exact: true
+        component: ResetPassword
     },
     {
-        path: '/account',
+        path: '/account/*',
         component: Account
     },
     {
@@ -85,8 +81,7 @@ export const routes = [
             // (1) Captcha for passwordless login, (2) OTP for email changes. See config/default.js for details.
             const enabled = getConfig()?.app?.oneClickCheckout?.enabled
             return enabled ? <CheckoutOneClick {...props} /> : <Checkout {...props} />
-        },
-        exact: true
+        }
     },
     {
         path: '/checkout/confirmation/:orderNo',
@@ -98,13 +93,11 @@ export const routes = [
     },
     {
         path: '/callback',
-        component: LoginRedirect,
-        exact: true
+        component: LoginRedirect
     },
     {
         path: '/cart',
-        component: Cart,
-        exact: true
+        component: Cart
     },
     {
         path: '/product/:productId',
@@ -141,20 +134,17 @@ export default () => {
     const dynamicRoutes = [
         resetPasswordLandingPath && {
             path: resetPasswordLandingPath,
-            component: ResetPassword,
-            exact: true
+            component: ResetPassword
         },
         passwordlessLoginEnabled &&
             passwordlessLoginLandingPath && {
                 path: passwordlessLoginLandingPath,
-                component: Login,
-                exact: true
+                component: Login
             },
         socialLoginEnabled &&
             socialRedirectURI && {
                 path: socialRedirectURI,
-                component: SocialLoginRedirect,
-                exact: true
+                component: SocialLoginRedirect
             }
     ].filter(Boolean)
 

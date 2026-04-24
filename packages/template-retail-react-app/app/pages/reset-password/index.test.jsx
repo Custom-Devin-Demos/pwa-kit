@@ -14,16 +14,6 @@ import {
 import ResetPassword from '.'
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'
 
-const mockUseRouteMatch = jest.fn(() => ({path: '/'}))
-
-jest.mock('react-router', () => {
-    const original = jest.requireActual('react-router')
-    return {
-        ...original,
-        useRouteMatch: () => mockUseRouteMatch()
-    }
-})
-
 const MockedComponent = () => {
     return (
         <div>
@@ -34,10 +24,6 @@ const MockedComponent = () => {
 
 // Set up and clean up
 beforeEach(() => {
-    // Reset useRouteMatch mock to return path based on window.location.pathname
-    mockUseRouteMatch.mockImplementation(() => ({
-        path: typeof window !== 'undefined' && window.location ? window.location.pathname : '/'
-    }))
     window.history.pushState({}, 'Reset Password', createPathWithDefaults('/reset-password'))
 })
 afterEach(() => {

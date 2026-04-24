@@ -7,7 +7,7 @@
 
 import React, {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
-import {useHistory, useLocation, useParams} from 'react-router-dom'
+import {useNavigate, useLocation, useParams} from 'react-router-dom'
 import {FormattedMessage, useIntl} from 'react-intl'
 import {Helmet} from 'react-helmet'
 import {
@@ -117,7 +117,7 @@ const ProductList = (props) => {
     const {isOpen, onOpen, onClose} = useDisclosure()
     const {formatMessage} = useIntl()
     const navigate = useNavigation()
-    const history = useHistory()
+    const routerNavigate = useNavigate()
     const params = useParams()
     const location = useLocation()
     const toast = useToast()
@@ -704,7 +704,7 @@ const ProductList = (props) => {
                                         display="none"
                                         value={basePath}
                                         onChange={({target}) => {
-                                            history.push(target.value)
+                                            routerNavigate(target.value)
                                         }}
                                     >
                                         {limitUrls.map((href, index) => (
@@ -817,7 +817,7 @@ const ProductList = (props) => {
                                 width="full"
                                 onClick={() => {
                                     setSortOpen(false)
-                                    history.push(href)
+                                    routerNavigate(href)
                                 }}
                                 fontSize={'md'}
                                 key={idx}
@@ -853,7 +853,7 @@ export default ProductList
 
 const Sort = ({sortUrls, productSearchResult, basePath, ...otherProps}) => {
     const intl = useIntl()
-    const history = useHistory()
+    const routerNavigate = useNavigate()
 
     return (
         <FormControl
@@ -874,7 +874,7 @@ const Sort = ({sortUrls, productSearchResult, basePath, ...otherProps}) => {
                 })}
                 value={basePath.replace(/(offset)=(\d+)/i, '$1=0')}
                 onChange={({target}) => {
-                    history.push(target.value)
+                    routerNavigate(target.value)
                 }}
                 height={11}
                 width="240px"

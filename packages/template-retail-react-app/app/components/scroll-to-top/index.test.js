@@ -7,19 +7,24 @@
 import React from 'react'
 import {render, waitFor} from '@testing-library/react'
 import ScrollToTop from '@salesforce/retail-react-app/app/components/scroll-to-top/index'
-import {Router} from 'react-router-dom'
-import {createMemoryHistory} from 'history'
+import {MemoryRouter, useNavigate} from 'react-router-dom'
 
 global.scrollTo = jest.fn()
 
-describe('ScrollToTop', () => {
-    let history = createMemoryHistory({initialEntries: ['/']})
+let testNavigate
 
+const NavigateHelper = () => {
+    testNavigate = useNavigate()
+    return null
+}
+
+describe('ScrollToTop', () => {
     beforeEach(() => {
         render(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/']}>
                 <ScrollToTop />
-            </Router>
+                <NavigateHelper />
+            </MemoryRouter>
         )
     })
 
@@ -31,13 +36,13 @@ describe('ScrollToTop', () => {
         expect(global.scrollTo).toHaveBeenCalledTimes(1)
         expect(global.scrollTo).toHaveBeenCalledWith(0, 0)
 
-        history.push('/new-url')
+        testNavigate('/new-url')
         await waitFor(() => {
             expect(global.scrollTo).toHaveBeenCalledTimes(2)
         })
         expect(global.scrollTo).toHaveBeenCalledWith(0, 0)
 
-        history.push('/new-url2')
+        testNavigate('/new-url2')
         await waitFor(() => {
             expect(global.scrollTo).toHaveBeenCalledTimes(3)
         })

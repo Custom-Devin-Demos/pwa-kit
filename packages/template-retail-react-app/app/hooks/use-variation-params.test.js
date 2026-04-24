@@ -6,11 +6,11 @@
  */
 
 import React from 'react'
-import {Router} from 'react-router'
+import {MemoryRouter} from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import {render} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
+
 import {useVariationParams} from '@salesforce/retail-react-app/app/hooks/use-variation-params'
 
 // Below is a partial product used for mocking purposes. Note: only the properties
@@ -38,54 +38,50 @@ MockComponent.propTypes = {
 
 describe('The useVariationParams', () => {
     test('returns correct params when there are no non-product params in the url.', () => {
-        const history = createMemoryHistory()
         history.push('/test/path?color=blue&size=2')
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('params').text).toBe('{"color":"blue","size":"2"}')
     })
 
     test('returns correct params when there are non-product params in the url.', () => {
-        const history = createMemoryHistory()
         history.push('/test/path?color=blue&size=2&nonproductattribute=true')
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('params').text).toBe('{"color":"blue","size":"2"}')
     })
 
     test('returns correct params when there is only a subset product params in the url.', () => {
-        const history = createMemoryHistory()
         history.push('/test/path?color=blue')
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('params').text).toBe('{"color":"blue"}')
     })
 
     test('uses controlled values instead of URL params when provided (controlled mode)', () => {
-        const history = createMemoryHistory()
         history.push('/test/path?color=blue&size=M')
 
         const controlledValues = {color: 'red', size: 'L'}
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent controlledValues={controlledValues} />
-            </Router>
+            </MemoryRouter>
         )
 
         // Should use controlled values, not URL params
@@ -93,15 +89,14 @@ describe('The useVariationParams', () => {
     })
 
     test('ignores URL params completely in controlled mode', () => {
-        const history = createMemoryHistory()
         history.push('/test/path?color=blue&size=M&extra=ignored')
 
         const controlledValues = {size: 'XL'}
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent controlledValues={controlledValues} />
-            </Router>
+            </MemoryRouter>
         )
 
         // Should only use controlled values
@@ -109,13 +104,12 @@ describe('The useVariationParams', () => {
     })
 
     test('returns empty object when controlled values is null (URL mode)', () => {
-        const history = createMemoryHistory()
         history.push('/test/path')
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent controlledValues={null} />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('params').text).toBe('{}')

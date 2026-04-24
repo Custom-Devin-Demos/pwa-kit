@@ -6,22 +6,16 @@
  */
 
 import React from 'react'
-import {Route, Switch, useRouteMatch} from 'react-router'
+import {Routes, Route} from 'react-router-dom'
 import OrderHistory from '@salesforce/retail-react-app/app/pages/account/order-history'
 import OrderDetail from '@salesforce/retail-react-app/app/pages/account/order-detail'
 
 const AccountOrders = () => {
-    const {path} = useRouteMatch()
-
     return (
-        <Switch>
-            <Route exact path={path}>
-                <OrderHistory />
-            </Route>
-            <Route exact path={`${path}/:orderNo`}>
-                <OrderDetail />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route index element={<OrderHistory />} />
+            <Route path=":orderNo" element={<OrderDetail />} />
+        </Routes>
     )
 }
 

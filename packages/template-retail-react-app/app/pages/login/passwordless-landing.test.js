@@ -12,7 +12,7 @@ import {
     createPathWithDefaults
 } from '@salesforce/retail-react-app/app/utils/test-utils'
 import Login from '.'
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import Account from '@salesforce/retail-react-app/app/pages/account'
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'
 import {mockedRegisteredCustomer} from '@salesforce/retail-react-app/app/mocks/mock-data'
@@ -42,23 +42,16 @@ const MockedComponent = () => {
     }
     return (
         <Router>
-            <Login />
-            <Route path={createPathWithDefaults('/account')}>
-                <Account match={match} />
-            </Route>
+            <Routes>
+                <Route path={createPathWithDefaults('/login/*')} element={<Login />} />
+                <Route
+                    path={createPathWithDefaults('/account/*')}
+                    element={<Account match={match} />}
+                />
+            </Routes>
         </Router>
     )
 }
-
-const mockUseRouteMatch = jest.fn(() => ({path: '/'}))
-
-jest.mock('react-router', () => {
-    const original = jest.requireActual('react-router')
-    return {
-        ...original,
-        useRouteMatch: () => mockUseRouteMatch()
-    }
-})
 
 jest.mock('@salesforce/commerce-sdk-react', () => {
     const originalModule = jest.requireActual('@salesforce/commerce-sdk-react')
@@ -80,11 +73,6 @@ jest.mock('@salesforce/commerce-sdk-react', () => {
 beforeEach(() => {
     jest.clearAllMocks()
     getConfig.mockReturnValue(mockConfig)
-
-    // Reset useRouteMatch mock to return path based on window.location.pathname
-    mockUseRouteMatch.mockImplementation(() => ({
-        path: typeof window !== 'undefined' && window.location ? window.location.pathname : '/'
-    }))
 
     global.server.use(
         rest.post('*/customers', (req, res, ctx) => {

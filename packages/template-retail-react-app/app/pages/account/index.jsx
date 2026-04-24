@@ -8,7 +8,7 @@
 import React, {useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
 import {FormattedMessage, useIntl} from 'react-intl'
-import {Route, Switch, useRouteMatch, Redirect} from 'react-router'
+import {Routes, Route, Navigate} from 'react-router-dom'
 import {
     Accordion,
     AccordionButton,
@@ -84,7 +84,7 @@ LogoutButton.propTypes = {
     onClick: PropTypes.func.isRequired
 }
 const Account = () => {
-    const {path} = useRouteMatch()
+    const basePath = '/account'
     const {formatMessage} = useIntl()
     const {data: customer} = useCurrentCustomer()
     const {isRegistered, customerType} = customer
@@ -124,8 +124,8 @@ const Account = () => {
     // Using Redirect allows us to store the directed page to location
     // so we can direct users back after they are successfully log in
     if (customerType !== null && !isRegistered && onClient) {
-        const path = buildUrl('/login')
-        return <Redirect to={{pathname: path, state: {directedFrom: '/account'}}} />
+        const loginPath = buildUrl('/login')
+        return <Navigate to={loginPath} state={{directedFrom: '/account'}} replace />
     }
 
     return (
@@ -238,27 +238,22 @@ const Account = () => {
                     </Flex>
                 </Stack>
 
-                <Switch>
-                    <Route exact path={path}>
-                        <AccountDetail
-                            handleForgotPasswordClick={() => navigate('/reset-password')}
-                        />
-                    </Route>
-                    <Route exact path={`${path}/wishlist`}>
-                        <AccountWishlist />
-                    </Route>
-                    <Route exact path={`${path}/addresses`}>
-                        <AccountAddresses />
-                    </Route>
-                    <Route path={`${path}/orders`}>
-                        <AccountOrders />
-                    </Route>
+                <Routes>
+                    <Route
+                        index
+                        element={
+                            <AccountDetail
+                                handleForgotPasswordClick={() => navigate('/reset-password')}
+                            />
+                        }
+                    />
+                    <Route path="wishlist" element={<AccountWishlist />} />
+                    <Route path="addresses" element={<AccountAddresses />} />
+                    <Route path="orders/*" element={<AccountOrders />} />
                     {isOneClickCheckoutEnabled && (
-                        <Route exact path={`${path}/payments`}>
-                            <AccountPayments />
-                        </Route>
+                        <Route path="payments" element={<AccountPayments />} />
                     )}
-                </Switch>
+                </Routes>
             </Grid>
         </Box>
     )

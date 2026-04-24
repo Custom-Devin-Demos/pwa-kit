@@ -7,7 +7,7 @@
 
 import React from 'react'
 import {screen, waitFor, within} from '@testing-library/react'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Routes} from 'react-router-dom'
 import {rest} from 'msw'
 import {
     renderWithProviders,
@@ -41,11 +41,12 @@ jest.mock('@salesforce/pwa-kit-runtime/utils/ssr-config', () => {
 
 const MockedComponent = () => {
     return (
-        <Switch>
-            <Route path={createPathWithDefaults('/checkout/confirmation/:orderNo')}>
-                <Confirmation />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route
+                path={createPathWithDefaults('/checkout/confirmation/:orderNo')}
+                element={<Confirmation />}
+            />
+        </Routes>
     )
 }
 

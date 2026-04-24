@@ -37,24 +37,19 @@ jest.mock('./utils', () => {
 jest.mock('../../auth/index.ts')
 jest.mock('../../hooks/useConfig', () => jest.fn())
 
-const mockPush = jest.fn()
-const mockReplace = jest.fn()
+const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => {
     const actual = jest.requireActual('react-router-dom')
     return {
         ...actual,
-        useHistory: () => ({
-            push: mockPush,
-            replace: mockReplace
-        })
+        useNavigate: () => mockNavigate
     }
 })
 
 describe('Storefront Preview Component', function () {
     beforeEach(() => {
         delete window.STOREFRONT_PREVIEW
-        mockPush.mockClear()
-        mockReplace.mockClear()
+        mockNavigate.mockClear()
         ;(useConfig as jest.Mock).mockReturnValue({siteId: 'site-id'})
     })
     afterEach(() => {
@@ -143,11 +138,11 @@ describe('Storefront Preview Component', function () {
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/mybase/product/123', 'push')
-        expect(mockPush).toHaveBeenCalledWith('/product/123')
+        expect(mockNavigate).toHaveBeenCalledWith('/product/123', {replace: false})
 
-        mockPush.mockClear()
+        mockNavigate.mockClear()
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/mybase/account', 'replace')
-        expect(mockReplace).toHaveBeenCalledWith('/account')
+        expect(mockNavigate).toHaveBeenCalledWith('/account', {replace: true})
     })
 
     test('experimentalUnsafeNavigate does not remove when path does not start with base path', () => {
@@ -162,7 +157,7 @@ describe('Storefront Preview Component', function () {
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/other/product/123', 'push')
-        expect(mockPush).toHaveBeenCalledWith('/other/product/123')
+        expect(mockNavigate).toHaveBeenCalledWith('/other/product/123', {replace: false})
     })
 
     test('experimentalUnsafeNavigate does not strip when path has basePath only as substring (e.g. /shop vs /shopping/cart)', () => {
@@ -177,7 +172,7 @@ describe('Storefront Preview Component', function () {
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/shopping/cart', 'push')
-        expect(mockPush).toHaveBeenCalledWith('/shopping/cart')
+        expect(mockNavigate).toHaveBeenCalledWith('/shopping/cart', {replace: false})
     })
 
     test('experimentalUnsafeNavigate strips to / when path exactly equals basePath', () => {
@@ -192,7 +187,7 @@ describe('Storefront Preview Component', function () {
         )
 
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/mybase', 'push')
-        expect(mockPush).toHaveBeenCalledWith('/')
+        expect(mockNavigate).toHaveBeenCalledWith('/', {replace: false})
     })
 
     test('experimentalUnsafeNavigate removes base path from location object when getBasePath is provided', () => {
@@ -210,7 +205,7 @@ describe('Storefront Preview Component', function () {
             {pathname: '/mybase/product/123', search: '?q=1'},
             'push'
         )
-        expect(mockPush).toHaveBeenCalledWith({pathname: '/product/123', search: '?q=1'})
+        expect(mockNavigate).toHaveBeenCalledWith('/product/123?q=1', {replace: false})
     })
 
     test('experimentalUnsafeNavigate strips base path prefix from /__pwa-kit/ paths when getBasePath returns empty (showBasePath false)', () => {
@@ -229,7 +224,7 @@ describe('Storefront Preview Component', function () {
             '/test/__pwa-kit/refresh?referrer=/some-page',
             'replace'
         )
-        expect(mockReplace).toHaveBeenCalledWith('/__pwa-kit/refresh?referrer=/some-page')
+        expect(mockNavigate).toHaveBeenCalledWith('/__pwa-kit/refresh?referrer=/some-page', {replace: true})
     })
 
     test('experimentalUnsafeNavigate strips base path prefix from /__pwa-kit/ location objects when getBasePath returns empty', () => {
@@ -247,10 +242,7 @@ describe('Storefront Preview Component', function () {
             {pathname: '/test/__pwa-kit/refresh', search: '?referrer=/some-page'},
             'replace'
         )
-        expect(mockReplace).toHaveBeenCalledWith({
-            pathname: '/__pwa-kit/refresh',
-            search: '?referrer=/some-page'
-        })
+        expect(mockNavigate).toHaveBeenCalledWith('/__pwa-kit/refresh?referrer=/some-page', {replace: true, state: undefined})
     })
 
     test('experimentalUnsafeNavigate normalizes /__pwa-kit/ paths and then strips router base path (showBasePath true)', () => {
@@ -271,7 +263,7 @@ describe('Storefront Preview Component', function () {
             '/test/__pwa-kit/refresh?referrer=/test/some-page',
             'replace'
         )
-        expect(mockReplace).toHaveBeenCalledWith('/__pwa-kit/refresh?referrer=/test/some-page')
+        expect(mockNavigate).toHaveBeenCalledWith('/__pwa-kit/refresh?referrer=/test/some-page', {replace: true})
     })
 
     test('experimentalUnsafeNavigate does not alter /__pwa-kit/ paths that have no prefix', () => {
@@ -290,7 +282,7 @@ describe('Storefront Preview Component', function () {
             '/__pwa-kit/refresh?referrer=/some-page',
             'push'
         )
-        expect(mockPush).toHaveBeenCalledWith('/__pwa-kit/refresh?referrer=/some-page')
+        expect(mockNavigate).toHaveBeenCalledWith('/__pwa-kit/refresh?referrer=/some-page', {replace: false})
     })
 
     test('experimentalUnsafeNavigate does not affect non /__pwa-kit/ paths when showBasePath is false', () => {
@@ -306,7 +298,7 @@ describe('Storefront Preview Component', function () {
 
         // Regular navigation paths should pass through untouched
         window.STOREFRONT_PREVIEW?.experimentalUnsafeNavigate?.('/products/123', 'push')
-        expect(mockPush).toHaveBeenCalledWith('/products/123')
+        expect(mockNavigate).toHaveBeenCalledWith('/products/123', {replace: false})
     })
 
     test('cache breaker is added to the parameters of SCAPI requests, only if in storefront preview', () => {

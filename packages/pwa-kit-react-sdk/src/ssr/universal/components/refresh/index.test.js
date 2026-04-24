@@ -7,19 +7,17 @@
 import {useQueryClient} from '@tanstack/react-query'
 import {render, screen, waitFor} from '@testing-library/react'
 import React from 'react'
-import {useHistory, useLocation} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
 import Refresh from './index'
 import {getRouterBasePath} from '../../utils'
 
 jest.useFakeTimers()
 
 const referrerURL = 'some-url'
+const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => {
-    const replace = jest.fn()
     return {
-        useHistory: jest.fn(() => ({
-            replace
-        })),
+        useNavigate: jest.fn(() => mockNavigate),
         useLocation: jest.fn(() => ({
             search: `?referrer=${referrerURL}`
         }))
@@ -63,7 +61,7 @@ test('a project not using react-query', async () => {
     await waitFor(() => {
         // Expect to still continue despite the project not using react-query,
         // specifically continue to navigate back to the referrer.
-        expect(useHistory().replace).toHaveBeenCalledWith(referrerURL)
+        expect(mockNavigate).toHaveBeenCalledWith(referrerURL, {replace: true})
     })
 })
 
@@ -72,7 +70,7 @@ test('wait for soft navigation to the referrer', async () => {
     jest.runAllTimers()
 
     await waitFor(() => {
-        expect(useHistory().replace).toHaveBeenCalledWith(referrerURL)
+        expect(mockNavigate).toHaveBeenCalledWith(referrerURL, {replace: true})
     })
 })
 
@@ -87,7 +85,7 @@ test('navigate to homepage if `referrer` search param cannot be found in the pag
 
     await waitFor(() => {
         expect(console.warn).toHaveBeenCalled()
-        expect(useHistory().replace).toHaveBeenCalledWith('/')
+        expect(mockNavigate).toHaveBeenCalledWith('/', {replace: true})
     })
 })
 
@@ -102,7 +100,7 @@ test('strips base path from referrer when basePath is set', async () => {
     jest.runAllTimers()
 
     await waitFor(() => {
-        expect(useHistory().replace).toHaveBeenCalledWith('/some-page')
+        expect(mockNavigate).toHaveBeenCalledWith('/some-page', {replace: true})
     })
 
     getRouterBasePath.mockReturnValue('')
@@ -119,7 +117,7 @@ test('strips base path from referrer when referrer equals basePath exactly', asy
     jest.runAllTimers()
 
     await waitFor(() => {
-        expect(useHistory().replace).toHaveBeenCalledWith('/')
+        expect(mockNavigate).toHaveBeenCalledWith('/', {replace: true})
     })
 
     getRouterBasePath.mockReturnValue('')
@@ -136,7 +134,7 @@ test('does not strip base path when referrer does not start with basePath', asyn
     jest.runAllTimers()
 
     await waitFor(() => {
-        expect(useHistory().replace).toHaveBeenCalledWith('/other-path/page')
+        expect(mockNavigate).toHaveBeenCalledWith('/other-path/page', {replace: true})
     })
 
     getRouterBasePath.mockReturnValue('')

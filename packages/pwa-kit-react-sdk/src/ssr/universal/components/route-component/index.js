@@ -6,7 +6,7 @@
  */
 import PropTypes from 'prop-types'
 import React from 'react'
-import {withRouter} from 'react-router-dom'
+import {useLocation, useParams, useNavigate} from 'react-router-dom'
 import hoistNonReactStatic from 'hoist-non-react-statics'
 import {AppErrorContext} from '../../components/app-error-boundary'
 import Throw404 from '../../components/throw-404'
@@ -48,6 +48,29 @@ const withErrorHandling = (Wrapped) => {
 
     WithErrorHandling.displayName = `WithErrorHandling(${wrappedComponentName})`
     return WithErrorHandling
+}
+
+/**
+ * A replacement for the v5 withRouter HOC. Provides location, params (as match),
+ * and navigate to class components.
+ * @private
+ */
+const withRouter = (Wrapped) => {
+    /* istanbul ignore next */
+    const wrappedComponentName = Wrapped.displayName || Wrapped.name
+
+    const WithRouter = (props) => {
+        const location = useLocation()
+        const params = useParams()
+        const navigate = useNavigate()
+        const match = {params: params || {}}
+        return <Wrapped {...props} location={location} match={match} navigate={navigate} />
+    }
+
+    hoistNonReactStatic(WithRouter, Wrapped)
+
+    WithRouter.displayName = `withRouter(${wrappedComponentName})`
+    return WithRouter
 }
 
 /**
@@ -127,15 +150,6 @@ export const routeComponent = (Wrapped, isPage, locals) => {
          * passed to the component as props for rendering. The returned Object is
          * serialzied and embedded into the rendered HTML as the initial app
          * state when running server-side.
-         *
-         * Throwing or rejecting inside `getProps` will cause the server to return
-         * an Error, with an appropriate status code.
-         *
-         * Note that `req` and `res` are only defined on the server – the only place
-         * the code actually has access to Express requests or responses.
-         *
-         * If not implemented `getProps()` does nothing and the component will not
-         * fetch any data.
          *
          * Before the promise is returned, a reference is stored for later
          * comparision with a call to isLatestPropsPromise. This is used to
@@ -379,6 +393,7 @@ export const routeComponent = (Wrapped, isPage, locals) => {
     RouteComponent.propTypes = {
         location: PropTypes.object,
         match: PropTypes.object,
+        navigate: PropTypes.func,
         onGetPropsComplete: PropTypes.func,
         onGetPropsError: PropTypes.func,
         onUpdateComplete: PropTypes.func,
@@ -413,7 +428,7 @@ export const getRoutes = (locals) => {
         ..._routes,
         {path: '*', component: Throw404}
     ]
-    return allRoutes.map(({component, ...rest}) => {
+    return allRoutes.map(({component, exact, ...rest}) => {
         return {
             component: component ? routeComponent(component, true, locals) : component,
             ...rest
