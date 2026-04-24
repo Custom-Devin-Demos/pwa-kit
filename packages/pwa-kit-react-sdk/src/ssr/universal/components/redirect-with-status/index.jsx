@@ -24,9 +24,7 @@ const RedirectWithStatus = ({status = 302, to, ...props}) => {
     if (ssrRedirectContext) {
         ssrRedirectContext.status = status
         ssrRedirectContext.url =
-            typeof to === 'string'
-                ? to
-                : `${to.pathname || ''}${to.search || ''}${to.hash || ''}`
+            typeof to === 'string' ? to : `${to.pathname || ''}${to.search || ''}${to.hash || ''}`
     }
 
     return <Navigate to={to} replace {...props} />
