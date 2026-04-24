@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {Router} from 'react-router'
+import {MemoryRouter} from 'react-router-dom'
 
 import {render} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
+
 import {usePageUrls} from '@salesforce/retail-react-app/app/hooks/use-page-urls'
 
 const MockComponent = () => {
@@ -23,13 +23,13 @@ const MockComponent = () => {
 
 describe('The usePageUrls', () => {
     test('returns an array of urls, one values for each page with the correct offset value.', () => {
-        const history = createMemoryHistory()
+        
         history.push('/test/path?limit=25')
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('limits').text).toBe(

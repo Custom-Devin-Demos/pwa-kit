@@ -12,6 +12,7 @@ import logger from '../../../utils/logger-instance'
 
 const CorrelationIdContext = React.createContext()
 const ServerContext = React.createContext()
+const SSRRedirectContext = React.createContext(null)
 
 /**
  * This provider initializes the correlation id,
@@ -63,4 +64,4 @@ CorrelationIdProvider.propTypes = {
     location: PropTypes.object
 }
 
-export {CorrelationIdContext, CorrelationIdProvider, ServerContext}
+export {CorrelationIdContext, CorrelationIdProvider, ServerContext, SSRRedirectContext}

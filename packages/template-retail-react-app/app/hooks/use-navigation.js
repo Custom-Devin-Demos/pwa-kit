@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import {useCallback} from 'react'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import useMultiSite from '@salesforce/retail-react-app/app/hooks/use-multi-site'
 import {removeSiteLocaleFromPath} from '@salesforce/retail-react-app/app/utils/url'
 
@@ -15,7 +15,7 @@ import {removeSiteLocaleFromPath} from '@salesforce/retail-react-app/app/utils/u
  * @returns {function} - Returns a navigate function that passes args to history methods.
  */
 const useNavigation = () => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const {site, locale: localeShortCode, buildUrl} = useMultiSite()
 
@@ -28,7 +28,8 @@ const useNavigation = () => {
          */
         (path, action = 'push', ...args) => {
             const updatedHref = buildUrl(removeSiteLocaleFromPath(path))
-            history[action](path === '/' ? '/' : updatedHref, ...args)
+            const target = path === '/' ? '/' : updatedHref
+            navigate(target, {replace: action === 'replace'})
         },
         [localeShortCode, site]
     )

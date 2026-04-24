@@ -14,7 +14,8 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import {Helmet} from 'react-helmet'
 import {ChunkExtractor} from '@loadable/server'
-import {StaticRouter as Router, matchPath} from 'react-router-dom'
+import {StaticRouter as Router} from 'react-router-dom/server'
+import {matchPath} from 'react-router-dom'
 import serialize from 'serialize-javascript'
 import PropTypes from 'prop-types'
 import sprite from 'svg-sprite-loader/runtime/sprite.build'
@@ -25,7 +26,7 @@ import {NO_CACHE} from '@salesforce/pwa-kit-runtime/ssr/server/constants'
 import {shutdownServerTracing, tracePerformance} from './opentelemetry-server'
 
 import {getAssetUrl} from '../universal/utils'
-import {ServerContext, CorrelationIdProvider} from '../universal/contexts'
+import {ServerContext, CorrelationIdProvider, SSRRedirectContext} from '../universal/contexts'
 
 import Document from '../universal/components/_document'
 import App from '../universal/components/_app'
@@ -154,7 +155,10 @@ const performRender = async (req, res, next) => {
     let match
 
     routes.some((_route) => {
-        const _match = matchPath(req.path, _route)
+        const _match = matchPath(
+            {path: _route.path, end: _route.exact !== false},
+            req.path
+        )
         if (_match) {
             match = _match
             route = _route
@@ -172,7 +176,7 @@ const performRender = async (req, res, next) => {
     const props = {
         error: null,
         appState: {},
-        routerContext: {},
+        ssrRedirectContext: {},
         req,
         res,
         App: WrappedApp,
@@ -235,8 +239,8 @@ const performRender = async (req, res, next) => {
 
     // Step 5 - Determine what is going to happen, redirect, or send html with
     // the correct status code.
-    const {html, routerContext, error} = renderResult
-    const redirectUrl = routerContext.url
+    const {html, ssrRedirectContext, error} = renderResult
+    const redirectUrl = ssrRedirectContext.url
     const status = (error && error.status) || res.statusCode
     res.__performanceTimer.mark(PERFORMANCE_MARKS.renderToString, 'end')
     res.__performanceTimer.mark(PERFORMANCE_MARKS.total, 'end')
@@ -255,7 +259,7 @@ const performRender = async (req, res, next) => {
     shutdownServerTracing()
 
     if (redirectUrl) {
-        res.redirect(routerContext.status || 302, redirectUrl)
+        res.redirect(ssrRedirectContext.status || 302, redirectUrl)
     } else {
         res.status(status).send(html)
     }
@@ -270,22 +274,24 @@ export const render = (req, res, next) => {
     }
 }
 
-const OuterApp = ({req, res, error, App, appState, routes, routerContext, location}) => {
+const OuterApp = ({req, res, error, App, appState, routes, ssrRedirectContext, location}) => {
     const AppConfig = getAppConfig()
     const routerBasename = getRouterBasePath() || undefined
 
     return (
         <ServerContext.Provider value={{req, res}}>
-            <Router location={location} context={routerContext} basename={routerBasename}>
-                <CorrelationIdProvider
-                    correlationId={res.locals.requestId}
-                    resetOnPageChange={false}
-                >
-                    <AppConfig locals={res.locals}>
-                        <Switch error={error} appState={appState} routes={routes} App={App} />
-                    </AppConfig>
-                </CorrelationIdProvider>
-            </Router>
+            <SSRRedirectContext.Provider value={ssrRedirectContext}>
+                <Router location={`${location.pathname}${location.search || ''}`} basename={routerBasename}>
+                    <CorrelationIdProvider
+                        correlationId={res.locals.requestId}
+                        resetOnPageChange={false}
+                    >
+                        <AppConfig locals={res.locals}>
+                            <Switch error={error} appState={appState} routes={routes} App={App} />
+                        </AppConfig>
+                    </CorrelationIdProvider>
+                </Router>
+            </SSRRedirectContext.Provider>
         </ServerContext.Provider>
     )
 }
@@ -297,7 +303,7 @@ OuterApp.propTypes = {
     App: PropTypes.elementType,
     appState: PropTypes.object,
     routes: PropTypes.array,
-    routerContext: PropTypes.object,
+    ssrRedirectContext: PropTypes.object,
     location: PropTypes.object
 }
 
@@ -312,22 +318,22 @@ const renderApp = (args) => {
     const prettyPrint = 'mobify_pretty' in req.query || '__pretty_print' in req.query
     const indent = prettyPrint ? 8 : 0
 
-    let routerContext
+    let ssrRedirectContext
     let appHtml
     let renderError
     // It's important that we render the App before extracting the script elements,
     // otherwise it won't return the correct chunks.
 
     try {
-        routerContext = {}
-        appHtml = renderToString(React.cloneElement(appJSX, {routerContext}), extractor)
+        ssrRedirectContext = {}
+        appHtml = renderToString(React.cloneElement(appJSX, {ssrRedirectContext}), extractor)
     } catch (e) {
         // This will catch errors thrown from the app and pass the error
         // to the AppErrorBoundary component, and renders the error page.
-        routerContext = {}
+        ssrRedirectContext = {}
         renderError = logAndFormatError(e)
         appHtml = renderToString(
-            React.cloneElement(appJSX, {routerContext, error: renderError}),
+            React.cloneElement(appJSX, {ssrRedirectContext, error: renderError}),
             extractor
         )
     }
@@ -403,7 +409,7 @@ const renderApp = (args) => {
         />
     )
 
-    return {error, html: ['<!doctype html>', html].join(''), routerContext}
+    return {error, html: ['<!doctype html>', html].join(''), ssrRedirectContext}
 }
 
 const getWindowProgressive = (req, res) => {

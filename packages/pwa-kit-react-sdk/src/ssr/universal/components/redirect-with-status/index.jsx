@@ -5,32 +5,33 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import React from 'react'
-import {Redirect, withRouter} from 'react-router-dom'
+import React, {useContext} from 'react'
+import {Navigate} from 'react-router-dom'
 import PropTypes from 'prop-types'
+import {SSRRedirectContext} from '../../contexts'
 
 /**
  * The `RedirectWithStatus` component is used to specify a different status code when redirecting via
- * the Redirect component.
+ * the Navigate component.
  * The default redirect behavior when this component is not used is to set a 302 status.
  *
  * @param {number} status - The HTTP status code. Defaults to 302 if not specified
- * @param {object} staticContext - The router context
  * @param {string} to - The redirect's target path
  */
-const RedirectWithStatus = ({status = 302, staticContext, ...props}) => {
-    // Handle server-side rendering
-    if (staticContext) {
-        staticContext.status = status
+const RedirectWithStatus = ({status = 302, to, ...props}) => {
+    const ssrRedirectContext = useContext(SSRRedirectContext)
+
+    if (ssrRedirectContext) {
+        ssrRedirectContext.status = status
+        ssrRedirectContext.url = typeof to === 'string' ? to : `${to.pathname || ''}${to.search || ''}${to.hash || ''}`
     }
 
-    return <Redirect {...props} />
+    return <Navigate to={to} replace {...props} />
 }
 
 RedirectWithStatus.propTypes = {
     status: PropTypes.number,
-    staticContext: PropTypes.object,
     to: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
 }
 
-export default withRouter(RedirectWithStatus)
+export default RedirectWithStatus

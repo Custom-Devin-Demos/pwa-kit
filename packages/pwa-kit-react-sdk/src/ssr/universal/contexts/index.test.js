@@ -7,8 +7,7 @@
 
 import React from 'react'
 import {render, screen} from '@testing-library/react'
-import {Router} from 'react-router-dom'
-import {createMemoryHistory} from 'history'
+import {MemoryRouter, useNavigate} from 'react-router-dom'
 
 import {CorrelationIdProvider} from './index'
 import {useCorrelationId} from '../hooks'
@@ -36,55 +35,52 @@ const Component = () => {
 }
 describe('CorrelationIdProvider', function () {
     test('Renders without errors', () => {
-        const history = createMemoryHistory()
         const id = crypto.randomUUID()
 
         render(
-            <Router history={history}>
+            <MemoryRouter>
                 <SampleProvider correlationId={() => id}>
                     <Component />
                 </SampleProvider>
-            </Router>
+            </MemoryRouter>
         )
         expect(screen.getByText(id)).toBeInTheDocument()
     })
 
     test('renders when correlationId is passed as a function', () => {
         const id = crypto.randomUUID()
-        const history = createMemoryHistory()
         render(
-            <Router history={history}>
+            <MemoryRouter>
                 <SampleProvider correlationId={() => id}>
                     <Component />
                 </SampleProvider>
-            </Router>
+            </MemoryRouter>
         )
         expect(screen.getByText(id)).toBeInTheDocument()
     })
 
     test('renders when correlationId is passed as a string', () => {
         const id = crypto.randomUUID()
-        const history = createMemoryHistory()
 
         render(
-            <Router history={history}>
+            <MemoryRouter>
                 <SampleProvider correlationId={id} resetOnPageChange={false}>
                     <Component />
                 </SampleProvider>
-            </Router>
+            </MemoryRouter>
         )
         expect(screen.getByText(id)).toBeInTheDocument()
     })
 
     test('generates a new id when changing page', async () => {
         const user = userEvent.setup()
-        const history = createMemoryHistory()
-        const Component = () => {
+        const NavigatingComponent = () => {
             const {correlationId} = useCorrelationId()
+            const navigate = useNavigate()
             return (
                 <div>
                     <div data-testid="correlation-id">{correlationId}</div>
-                    <button className="button" onClick={() => history.push('/page-1')}>
+                    <button className="button" onClick={() => navigate('/page-1')}>
                         Go to another page
                     </button>
                 </div>
@@ -92,11 +88,11 @@ describe('CorrelationIdProvider', function () {
         }
 
         render(
-            <Router history={history}>
+            <MemoryRouter>
                 <SampleProvider correlationId={() => crypto.randomUUID()}>
-                    <Component />
+                    <NavigatingComponent />
                 </SampleProvider>
-            </Router>
+            </MemoryRouter>
         )
 
         const firstRenderedId = screen.getByTestId('correlation-id').innerHTML

@@ -9,10 +9,10 @@ import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {Helmet} from 'react-helmet'
 import {CustomPropTypes, detectStorefrontPreview, getClientScript, proxyRequests} from './utils'
-import {useHistory} from 'react-router-dom'
-import type {LocationDescriptor} from 'history'
+import {useNavigate} from 'react-router-dom'
 import {useCommerceApi, useConfig} from '../../hooks'
 
+type LocationDescriptor<T = unknown> = string | {pathname?: string; search?: string; hash?: string; state?: T}
 type GetToken = () => string | undefined | Promise<string | undefined>
 type ContextChangeHandler = () => void | Promise<void>
 type OptionalWhenDisabled<T> = ({enabled?: true} & T) | ({enabled: false} & Partial<T>)
@@ -52,7 +52,7 @@ function normalizePwaKitPath<T>(pathOrLocation: LocationDescriptor<T>): Location
 /**
  * Strip the base path from a path
  *
- * React Router history re-adds the base path to the path, so we
+ * React Router navigate re-adds the base path to the path, so we
  * remove it here to avoid base path duplication.
  */
 function removeBasePathFromLocation<T>(
@@ -92,7 +92,7 @@ export const StorefrontPreview = ({
         getBasePath?: () => string
     }>
 >) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const isHostTrusted = detectStorefrontPreview()
     const apiClients = useCommerceApi()
     const {siteId} = useConfig()
@@ -106,13 +106,19 @@ export const StorefrontPreview = ({
                 siteId,
                 experimentalUnsafeNavigate: (
                     path: LocationDescriptor<unknown>,
-                    action: 'push' | 'replace' = 'push',
-                    ...args: unknown[]
+                    action: 'push' | 'replace' = 'push'
                 ) => {
                     const basePath = getBasePath?.() ?? ''
                     const normalizedPath = normalizePwaKitPath(path)
                     const pathWithoutBase = removeBasePathFromLocation(normalizedPath, basePath)
-                    history[action](pathWithoutBase, ...args)
+                    if (typeof pathWithoutBase === 'string') {
+                        navigate(pathWithoutBase, {replace: action === 'replace'})
+                    } else {
+                        navigate(
+                            `${pathWithoutBase.pathname || '/'}${pathWithoutBase.search || ''}${pathWithoutBase.hash || ''}`,
+                            {replace: action === 'replace', state: pathWithoutBase.state}
+                        )
+                    }
                 }
             }
         }

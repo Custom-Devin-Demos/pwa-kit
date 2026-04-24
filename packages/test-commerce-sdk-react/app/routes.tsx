@@ -32,7 +32,6 @@ const UseDntHook = loadable(() => import('./pages/use-dnt'))
 const routes = [
     {
         path: '/',
-        exact: true,
         component: Home
     },
     {

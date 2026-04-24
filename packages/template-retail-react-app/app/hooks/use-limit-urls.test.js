@@ -6,10 +6,10 @@
  */
 
 import React from 'react'
-import {Router} from 'react-router'
+import {MemoryRouter} from 'react-router-dom'
 
 import {render} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
+
 import {useLimitUrls} from '@salesforce/retail-react-app/app/hooks/use-limit-urls'
 
 const MockComponent = () => {
@@ -24,13 +24,13 @@ const MockComponent = () => {
 
 describe('The useLimitUrls', () => {
     test('returns an array of urls, one values for each limit value.', () => {
-        const history = createMemoryHistory()
+        
         history.push('/test/path')
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('limits').text).toBe(

@@ -7,7 +7,7 @@
 
 import React, {useState, useEffect, useMemo} from 'react'
 import PropTypes from 'prop-types'
-import {useHistory, useLocation} from 'react-router-dom'
+import {useNavigate, useLocation} from 'react-router-dom'
 import {StorefrontPreview} from '@salesforce/commerce-sdk-react/components'
 import {getAssetUrl, getRouterBasePath} from '@salesforce/pwa-kit-react-sdk/ssr/universal/utils'
 import useActiveData from '@salesforce/retail-react-app/app/hooks/use-active-data'
@@ -149,7 +149,7 @@ const App = (props) => {
     const {usid} = useUsid()
     const appOrigin = useAppOrigin()
     const activeData = useActiveData()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const authModal = useAuthModal()
     const dntNotification = useDntNotification()
@@ -279,7 +279,7 @@ const App = (props) => {
         // Goto the home page.
         const path = buildUrl(HOME_HREF)
 
-        history.push(path)
+        navigate(path)
 
         // Close the drawer.
         onClose()
@@ -287,7 +287,7 @@ const App = (props) => {
 
     const onCartClick = () => {
         const path = buildUrl('/cart')
-        history.push(path)
+        navigate(path)
 
         // Close the drawer.
         onClose()
@@ -296,13 +296,13 @@ const App = (props) => {
     const onAccountClick = () => {
         // Link to account page if registered; Header component will show auth modal for guest users
         const path = buildUrl('/account')
-        history.push(path)
+        navigate(path)
     }
 
     const onWishlistClick = () => {
         // Link to wishlist page if registered; Header component will show auth modal for guest users
         const path = buildUrl('/account/wishlist')
-        history.push(path)
+        navigate(path)
     }
 
     const {actions: shopperAgentActions} = useShopperAgent()

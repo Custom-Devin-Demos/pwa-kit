@@ -56,7 +56,7 @@ import {
     STALE_WHILE_REVALIDATE
 } from '@salesforce/retail-react-app/app/constants'
 import {rebuildPathWithParams} from '@salesforce/retail-react-app/app/utils/url'
-import {useHistory, useLocation, useParams} from 'react-router-dom'
+import {useNavigate, useLocation, useParams} from 'react-router-dom'
 import {useToast} from '@salesforce/retail-react-app/app/hooks/use-toast'
 import {useWishList} from '@salesforce/retail-react-app/app/hooks/use-wish-list'
 import {useStoreLocatorModal} from '@salesforce/retail-react-app/app/hooks/use-store-locator'
@@ -65,7 +65,7 @@ import {useProductInventory} from '@salesforce/retail-react-app/app/hooks/use-pr
 
 const ProductDetail = () => {
     const {formatMessage} = useIntl()
-    const history = useHistory()
+    const routerNavigate = useNavigate()
     const location = useLocation()
     const einstein = useEinstein()
     const dataCloud = useDataCloud()
@@ -232,7 +232,7 @@ const ProductDetail = () => {
         const updatedUrl = rebuildPathWithParams(`${location.pathname}${location.search}`, {
             pid: variant?.productId
         })
-        history.replace(updatedUrl)
+        routerNavigate(updatedUrl, {replace: true})
     }, [variant])
 
     /**************** Wishlist ****************/

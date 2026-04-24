@@ -65,25 +65,15 @@ jest.mock('../../routes', () => {
 })
 
 // NOTE: `react-router-dom` is being mocked because I was not able to get around the
-// issue where you can't use a `withRoute` HoC outside of a Router component for this
+// issue where you can't use router hooks outside of a Router component for this
 // specific test. TODO: Revisit this, so that we don't have to mock `react-router-dom`
 jest.mock('react-router-dom', () => {
-    const React = require('react')
-    const hoistNonReactStatic = require('hoist-non-react-statics')
-
-    const withRouter = (Wrapped) => {
-        const wrappedComponentName = Wrapped.displayName || Wrapped.name
-        const WithRouter = (props) => <Wrapped {...props} />
-        hoistNonReactStatic(WithRouter, Wrapped)
-        WithRouter.displayName = `withRouter(${wrappedComponentName})`
-
-        return WithRouter
-    }
-
     return {
         __esModule: true,
         default: {},
-        withRouter
+        useLocation: jest.fn(() => ({pathname: '/', search: '', hash: ''})),
+        useParams: jest.fn(() => ({})),
+        useNavigate: jest.fn(() => jest.fn())
     }
 })
 

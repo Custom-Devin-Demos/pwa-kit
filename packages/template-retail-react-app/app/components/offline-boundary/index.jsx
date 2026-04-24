@@ -6,7 +6,7 @@
  */
 import React from 'react'
 import PropTypes from 'prop-types'
-import {withRouter} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
 import {Button} from '@salesforce/retail-react-app/app/components/shared/ui'
 import {AlertIcon} from '@salesforce/retail-react-app/app/components/icons'
 
@@ -101,4 +101,10 @@ OfflineBoundary.propTypes = {
 }
 
 export {OfflineBoundary as UnwrappedOfflineBoundary}
-export default withRouter(OfflineBoundary)
+
+const OfflineBoundaryWithRouter = (props) => {
+    const location = useLocation()
+    return <OfflineBoundary {...props} location={location} />
+}
+
+export default OfflineBoundaryWithRouter

@@ -7,38 +7,50 @@
 
 import React from 'react'
 import {render} from '@testing-library/react'
-import {Router, StaticRouter, Route} from 'react-router-dom'
-import {createMemoryHistory} from 'history'
+import {MemoryRouter, Routes, Route} from 'react-router-dom'
+import {StaticRouter} from 'react-router-dom/server'
 import RedirectWithStatus from './index'
+import {SSRRedirectContext} from '../../contexts'
+
+const LocationDisplay = () => {
+    const location = require('react-router-dom').useLocation()
+    return <div data-testid="location">{location.pathname}</div>
+}
 
 describe('RedirectWithStatus', () => {
     test('Redirects if no status or context is provided', () => {
         const targetUrl = '/target'
-        const history = createMemoryHistory()
-        history.push('/redirect')
-        render(
-            <Router history={history}>
-                <Route path="/redirect">
-                    <RedirectWithStatus to={targetUrl} />
-                </Route>
-            </Router>
+        const {getByTestId} = render(
+            <MemoryRouter initialEntries={['/redirect']}>
+                <Routes>
+                    <Route path="/redirect" element={<RedirectWithStatus to={targetUrl} />} />
+                    <Route path="/target" element={<div>Target</div>} />
+                </Routes>
+                <LocationDisplay />
+            </MemoryRouter>
         )
-        expect(history.location.pathname).toBe(targetUrl)
+        expect(getByTestId('location').textContent).toBe(targetUrl)
     })
     test('Redirect renders with correct status', async () => {
-        const context = {}
+        const ssrRedirectContext = {}
         const status = 303
         const targetUrl = '/target'
 
         render(
-            <StaticRouter location="/redirect" context={context}>
-                <Route path="/redirect">
-                    <RedirectWithStatus status={status} to={targetUrl} />
-                </Route>
-            </StaticRouter>
+            <SSRRedirectContext.Provider value={ssrRedirectContext}>
+                <StaticRouter location="/redirect">
+                    <Routes>
+                        <Route
+                            path="/redirect"
+                            element={<RedirectWithStatus status={status} to={targetUrl} />}
+                        />
+                        <Route path="/target" element={<div>Target</div>} />
+                    </Routes>
+                </StaticRouter>
+            </SSRRedirectContext.Provider>
         )
 
-        expect(context.status).toBe(status)
-        expect(context.url).toBe(targetUrl)
+        expect(ssrRedirectContext.status).toBe(status)
+        expect(ssrRedirectContext.url).toBe(targetUrl)
     })
 })

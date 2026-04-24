@@ -6,10 +6,10 @@
  */
 
 import React from 'react'
-import {Router} from 'react-router'
+import {MemoryRouter} from 'react-router-dom'
 
 import {render} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
+
 import {useSortUrls} from '@salesforce/retail-react-app/app/hooks/use-sort-urls'
 
 const MOCK_SORT_OPTIONS = [{id: 'high-to-low'}, {id: 'low-to-high'}]
@@ -26,13 +26,13 @@ const MockComponent = () => {
 
 describe('The useSortUrls', () => {
     test('returns an array of urls, one values for each sort value.', () => {
-        const history = createMemoryHistory()
+        
         history.push('/test/path')
 
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('limits').text).toBe(

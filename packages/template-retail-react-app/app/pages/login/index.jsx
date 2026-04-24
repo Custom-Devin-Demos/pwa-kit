@@ -20,7 +20,6 @@ import {
 import useNavigation from '@salesforce/retail-react-app/app/hooks/use-navigation'
 import Seo from '@salesforce/retail-react-app/app/components/seo'
 import {useForm} from 'react-hook-form'
-import {useRouteMatch} from 'react-router'
 import {useLocation} from 'react-router-dom'
 import useEinstein from '@salesforce/retail-react-app/app/hooks/use-einstein'
 import useDataCloud from '@salesforce/retail-react-app/app/hooks/use-datacloud'
@@ -51,7 +50,7 @@ const Login = ({initialView = LOGIN_VIEW}) => {
     const form = useForm()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
-    const {path} = useRouteMatch()
+    const path = location.pathname
     const einstein = useEinstein()
     const dataCloud = useDataCloud()
     const {isRegistered, customerType} = useCustomerType()

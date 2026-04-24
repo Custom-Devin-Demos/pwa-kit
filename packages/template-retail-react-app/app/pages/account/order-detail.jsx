@@ -7,7 +7,7 @@
 
 import React, {useEffect, useRef, useMemo, useCallback} from 'react'
 import {FormattedMessage, useIntl} from 'react-intl'
-import {useHistory, useRouteMatch} from 'react-router'
+import {useNavigate, useParams} from 'react-router-dom'
 import {
     Box,
     Heading,
@@ -113,8 +113,8 @@ OrderProducts.propTypes = {
 }
 
 const AccountOrderDetail = () => {
-    const {params} = useRouteMatch()
-    const history = useHistory()
+    const params = useParams()
+    const navigate = useNavigate()
     const {formatMessage, formatDate} = useIntl()
     const storeLocatorEnabled = getConfig()?.app?.storeLocatorEnabled ?? STORE_LOCATOR_IS_ENABLED
 
@@ -261,11 +261,9 @@ const AccountOrderDetail = () => {
                         leftIcon={<ChevronLeftIcon />}
                         size="sm"
                         onClick={(e) => {
-                            if (history.action === 'PUSH') {
-                                e.preventDefault()
-                                history.goBack()
-                            }
-                        }}
+                            e.preventDefault()
+                            navigate(-1)
+                        }
                     >
                         <FormattedMessage
                             defaultMessage="Back to Order History"

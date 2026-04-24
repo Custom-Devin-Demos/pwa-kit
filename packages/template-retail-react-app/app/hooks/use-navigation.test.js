@@ -17,20 +17,14 @@ jest.mock('@salesforce/pwa-kit-runtime/utils/ssr-config', () => {
     }
 })
 
-const mockHistoryPush = jest.fn()
-const mockHistoryReplace = jest.fn()
+const mockNavigate = jest.fn()
 
-jest.mock('react-router', () => {
-    const original = jest.requireActual('react-router')
+jest.mock('react-router-dom', () => {
+    const original = jest.requireActual('react-router-dom')
 
     return {
         ...original,
-        useHistory: jest.fn().mockImplementation(() => {
-            return {
-                push: mockHistoryPush,
-                replace: mockHistoryReplace
-            }
-        })
+        useNavigate: jest.fn().mockImplementation(() => mockNavigate)
     }
 })
 
@@ -50,7 +44,7 @@ const TestComponent = () => {
     )
 }
 
-test('prepends locale and site and calls history.push', async () => {
+test('prepends locale and site and calls navigate', async () => {
     const user = userEvent.setup()
 
     getConfig.mockImplementation(() => mockConfig)
@@ -58,10 +52,10 @@ test('prepends locale and site and calls history.push', async () => {
         wrapperProps: {siteAlias: 'uk', appConfig: mockConfig.app}
     })
     await user.click(getByTestId('page1-link'))
-    expect(mockHistoryPush).toHaveBeenCalledWith('/uk/en-GB/page1')
+    expect(mockNavigate).toHaveBeenCalledWith('/uk/en-GB/page1', {replace: false})
 })
 
-test('append locale as path and site as query and calls history.push', async () => {
+test('append locale as path and site as query and calls navigate', async () => {
     const user = userEvent.setup()
 
     const newConfig = {
@@ -80,10 +74,10 @@ test('append locale as path and site as query and calls history.push', async () 
         wrapperProps: {siteAlias: 'uk', appConfig: newConfig.app}
     })
     await user.click(getByTestId('page1-link'))
-    expect(mockHistoryPush).toHaveBeenCalledWith('/en-GB/page1?site=uk')
+    expect(mockNavigate).toHaveBeenCalledWith('/en-GB/page1?site=uk', {replace: false})
 })
 
-test('works for any history method and args', async () => {
+test('works for any navigate action and args', async () => {
     const user = userEvent.setup()
 
     getConfig.mockImplementation(() => mockConfig)
@@ -93,7 +87,7 @@ test('works for any history method and args', async () => {
     })
 
     await user.click(getByTestId('page2-link'))
-    expect(mockHistoryReplace).toHaveBeenCalledWith('/uk/en-GB/page2', {})
+    expect(mockNavigate).toHaveBeenCalledWith('/uk/en-GB/page2', {replace: true})
 })
 
 test('if given the path to root or homepage, will not prepend the locale', async () => {
@@ -105,5 +99,5 @@ test('if given the path to root or homepage, will not prepend the locale', async
         wrapperProps: {siteAlias: 'us', locale: 'en-US'}
     })
     await user.click(getByTestId('page4-link'))
-    expect(mockHistoryPush).toHaveBeenCalledWith('/')
+    expect(mockNavigate).toHaveBeenCalledWith('/', {replace: false})
 })
