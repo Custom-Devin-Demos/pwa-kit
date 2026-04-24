@@ -12,7 +12,7 @@
 import path from 'path'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
-import {Helmet} from 'react-helmet'
+import {HelmetProvider} from 'react-helmet-async'
 import {ChunkExtractor} from '@loadable/server'
 import {StaticRouter as Router, matchPath} from 'react-router-dom'
 import serialize from 'serialize-javascript'
@@ -318,16 +318,25 @@ const renderApp = (args) => {
     // It's important that we render the App before extracting the script elements,
     // otherwise it won't return the correct chunks.
 
+    const helmetContext = {}
+
     try {
         routerContext = {}
-        appHtml = renderToString(React.cloneElement(appJSX, {routerContext}), extractor)
+        appHtml = renderToString(
+            <HelmetProvider context={helmetContext}>
+                {React.cloneElement(appJSX, {routerContext})}
+            </HelmetProvider>,
+            extractor
+        )
     } catch (e) {
         // This will catch errors thrown from the app and pass the error
         // to the AppErrorBoundary component, and renders the error page.
         routerContext = {}
         renderError = logAndFormatError(e)
         appHtml = renderToString(
-            React.cloneElement(appJSX, {routerContext, error: renderError}),
+            <HelmetProvider context={helmetContext}>
+                {React.cloneElement(appJSX, {routerContext, error: renderError})}
+            </HelmetProvider>,
             extractor
         )
     }
@@ -346,7 +355,7 @@ const renderApp = (args) => {
         )
     }
 
-    const helmet = Helmet.renderStatic()
+    const {helmet} = helmetContext
 
     // Return the first error encountered during the rendering pipeline.
     const error = appStateError || renderError

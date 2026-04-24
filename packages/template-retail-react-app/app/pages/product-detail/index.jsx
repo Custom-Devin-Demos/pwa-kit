@@ -7,7 +7,7 @@
 
 import React, {Fragment, useCallback, useEffect, useState} from 'react'
 import PropTypes from 'prop-types'
-import {Helmet} from 'react-helmet'
+import {Helmet} from 'react-helmet-async'
 import {FormattedMessage, useIntl} from 'react-intl'
 import {getUpdateBundleChildArray} from '@salesforce/retail-react-app/app/utils/product-utils'
 

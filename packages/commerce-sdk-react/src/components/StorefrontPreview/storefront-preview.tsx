@@ -7,7 +7,7 @@
 
 import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
-import {Helmet} from 'react-helmet'
+import {Helmet} from 'react-helmet-async'
 import {CustomPropTypes, detectStorefrontPreview, getClientScript, proxyRequests} from './utils'
 import {useHistory} from 'react-router-dom'
 import type {LocationDescriptor} from 'history'

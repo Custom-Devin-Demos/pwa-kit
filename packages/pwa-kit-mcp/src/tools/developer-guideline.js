@@ -40,7 +40,7 @@ This document offers guidelines in the development of Salesforce Commerce Compos
 - **React Query** - Data fetching/caching
 - **Webpack** - Bundling
 - **React Testing Library, Jest** - Testing libraries
-- **react-helmet, framer-motion, etc.** - Utilities, animation, head management
+- **react-helmet-async, framer-motion, etc.** - Utilities, animation, head management
 - **ESLint/Prettier** - Code formatting and linting
 
 ## PWK Kit Architecture

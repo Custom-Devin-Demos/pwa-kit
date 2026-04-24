@@ -7,7 +7,7 @@
 import React from 'react'
 import {render} from '@testing-library/react'
 import Page from './index'
-import {Helmet} from 'react-helmet'
+import {HelmetProvider} from 'react-helmet-async'
 import type {PageWithDesignMetadata} from '../types'
 
 // Mock the Component to avoid registry dependency
@@ -94,22 +94,19 @@ afterEach(() => {
 })
 
 test('Page renders without errors', () => {
-    const {container} = render(<Page page={SAMPLE_PAGE} components={{}} />)
+    const {container} = render(
+        <HelmetProvider>
+            <Page page={SAMPLE_PAGE} components={{}} />
+        </HelmetProvider>
+    )
 
     // Page is in document.
     expect(container.querySelector('[id=samplepage]')).toBeInTheDocument()
 
     // Meta data and title are set
-    const helmet = Helmet.peek()
-    expect(helmet.title).toBe('title')
-    expect(
-        helmet.metaTags.find(
-            ({name, content}) => name === 'description' && content === 'description'
-        )
-    ).toBeTruthy()
-    expect(
-        helmet.metaTags.find(({name, content}) => name === 'keywords' && content === 'keywords')
-    ).toBeTruthy()
+    expect(document.title).toBe('title')
+    expect(document.querySelector('meta[name="description"][content="description"]')).toBeTruthy()
+    expect(document.querySelector('meta[name="keywords"][content="keywords"]')).toBeTruthy()
 
     // Regions are in document.
     expect(container.querySelectorAll('.region')?.length).toBe(3)
@@ -124,7 +121,11 @@ test('Page renders with empty page data', () => {
         id: 'emptypage',
         regions: []
     } as unknown as PageWithDesignMetadata
-    const {container} = render(<Page page={emptyPage} />)
+    const {container} = render(
+        <HelmetProvider>
+            <Page page={emptyPage} />
+        </HelmetProvider>
+    )
 
     expect(container.querySelector('[id=emptypage]')).toBeInTheDocument()
     expect(container.querySelectorAll('.region')?.length).toBe(0)
@@ -135,10 +136,13 @@ test('Page renders without meta tags when not provided', () => {
         id: 'nometa',
         regions: []
     } as unknown as PageWithDesignMetadata
-    render(<Page page={pageWithoutMeta} />)
+    render(
+        <HelmetProvider>
+            <Page page={pageWithoutMeta} />
+        </HelmetProvider>
+    )
 
-    const helmet = Helmet.peek()
-    expect(helmet.title).toBeUndefined()
+    expect(document.querySelector('title[data-rh="true"]')).toBeNull()
 })
 
 test('Page applies custom className', () => {
@@ -146,7 +150,11 @@ test('Page applies custom className', () => {
         id: 'simplepage',
         regions: []
     } as unknown as PageWithDesignMetadata
-    const {container} = render(<Page page={simplePage} className="custom-page-class" />)
+    const {container} = render(
+        <HelmetProvider>
+            <Page page={simplePage} className="custom-page-class" />
+        </HelmetProvider>
+    )
 
     expect(container.querySelector('.page.custom-page-class')).toBeInTheDocument()
 })

@@ -8,6 +8,7 @@ import React, {useEffect, useRef} from 'react'
 import {render} from '@testing-library/react'
 import {BrowserRouter as Router} from 'react-router-dom'
 import {ChakraProvider} from '@salesforce/retail-react-app/app/components/shared/ui'
+import {HelmetProvider} from 'react-helmet-async'
 import PropTypes from 'prop-types'
 
 import theme from '@salesforce/retail-react-app/app/theme'
@@ -146,37 +147,41 @@ export const TestProviders = ({
     }
 
     return (
-        <ServerContext.Provider value={{}}>
-            <IntlProvider locale={locale.id} defaultLocale={DEFAULT_LOCALE} messages={messages}>
-                <MultiSiteProvider site={site} locale={locale} buildUrl={buildUrl}>
-                    <CommerceApiProvider
-                        shortCode={commerceApiConfig.parameters.shortCode}
-                        clientId={commerceApiConfig.parameters.clientId}
-                        organizationId={commerceApiConfig.parameters.organizationId}
-                        siteId={site?.id}
-                        locale={locale.id}
-                        proxy={`${window.location.origin}/${commerceApiConfig.proxyPath}`}
-                        redirectURI={`${window.location.origin}/testcallback`}
-                        fetchedToken={bypassAuth ? (isGuest ? guestToken : registerUserToken) : ''}
-                        clientSecret={'test-client-secret'}
-                    >
-                        <CurrencyProvider currency={DEFAULT_CURRENCY}>
-                            <Router>
-                                <StoreLocatorProvider config={storeLocatorConfig}>
-                                    <ChakraProvider theme={theme}>
-                                        <AddToCartModalProvider>
-                                            <BonusProductSelectionModalProvider>
-                                                {children}
-                                            </BonusProductSelectionModalProvider>
-                                        </AddToCartModalProvider>
-                                    </ChakraProvider>
-                                </StoreLocatorProvider>
-                            </Router>
-                        </CurrencyProvider>
-                    </CommerceApiProvider>
-                </MultiSiteProvider>
-            </IntlProvider>
-        </ServerContext.Provider>
+        <HelmetProvider>
+            <ServerContext.Provider value={{}}>
+                <IntlProvider locale={locale.id} defaultLocale={DEFAULT_LOCALE} messages={messages}>
+                    <MultiSiteProvider site={site} locale={locale} buildUrl={buildUrl}>
+                        <CommerceApiProvider
+                            shortCode={commerceApiConfig.parameters.shortCode}
+                            clientId={commerceApiConfig.parameters.clientId}
+                            organizationId={commerceApiConfig.parameters.organizationId}
+                            siteId={site?.id}
+                            locale={locale.id}
+                            proxy={`${window.location.origin}/${commerceApiConfig.proxyPath}`}
+                            redirectURI={`${window.location.origin}/testcallback`}
+                            fetchedToken={
+                                bypassAuth ? (isGuest ? guestToken : registerUserToken) : ''
+                            }
+                            clientSecret={'test-client-secret'}
+                        >
+                            <CurrencyProvider currency={DEFAULT_CURRENCY}>
+                                <Router>
+                                    <StoreLocatorProvider config={storeLocatorConfig}>
+                                        <ChakraProvider theme={theme}>
+                                            <AddToCartModalProvider>
+                                                <BonusProductSelectionModalProvider>
+                                                    {children}
+                                                </BonusProductSelectionModalProvider>
+                                            </AddToCartModalProvider>
+                                        </ChakraProvider>
+                                    </StoreLocatorProvider>
+                                </Router>
+                            </CurrencyProvider>
+                        </CommerceApiProvider>
+                    </MultiSiteProvider>
+                </IntlProvider>
+            </ServerContext.Provider>
+        </HelmetProvider>
     )
 }
 

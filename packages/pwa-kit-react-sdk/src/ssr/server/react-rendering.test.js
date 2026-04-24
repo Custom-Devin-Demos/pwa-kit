@@ -66,7 +66,7 @@ jest.mock('../universal/routes', () => {
     const errors = require('../universal/errors')
     const RedirectWithStatus = require('../universal/components/redirect-with-status').default
     const {Redirect} = require('react-router-dom')
-    const {Helmet} = require('react-helmet')
+    const {Helmet} = require('react-helmet-async')
     const {useQuery} = require('@tanstack/react-query')
     const {useServerContext} = require('../universal/hooks')
     /* eslint-enable @typescript-eslint/no-var-requires */

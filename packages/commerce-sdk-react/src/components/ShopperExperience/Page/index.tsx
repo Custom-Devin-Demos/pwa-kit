@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React, {useContext, useEffect, useState} from 'react'
-import {Helmet} from 'react-helmet'
+import {Helmet} from 'react-helmet-async'
 import type {Component as ComponentType, Page as PageType} from '../types'
 import {Region} from '../Region'
 

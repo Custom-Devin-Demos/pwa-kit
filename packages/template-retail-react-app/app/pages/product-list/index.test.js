@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {Helmet} from 'react-helmet'
 import PropTypes from 'prop-types'
 
 import {rest} from 'msw'
@@ -137,9 +136,21 @@ test('should render product list page', async () => {
         expect(screen.getByText(/Classic Glen Plaid Pant/i)).toBeInTheDocument()
     })
 
-    const helmet = Helmet.peek()
-    expect(helmet.linkTags).toHaveLength(15) // 3 images with 5 specific preload links with media queries each
-    expect(helmet.linkTags).toStrictEqual([
+    const ATTR_NAME_MAP = {
+        fetchpriority: 'fetchPriority',
+        imagesrcset: 'imageSrcSet',
+        imagesizes: 'imageSizes'
+    }
+    const linkTags = Array.from(document.querySelectorAll('link[data-rh="true"]')).map((el) => {
+        const obj = {}
+        for (const attr of el.attributes) {
+            if (attr.name === 'data-rh') continue
+            obj[ATTR_NAME_MAP[attr.name] || attr.name] = attr.value
+        }
+        return obj
+    })
+    expect(linkTags).toHaveLength(15) // 3 images with 5 specific preload links with media queries each
+    expect(linkTags).toStrictEqual([
         {
             as: 'image',
             fetchPriority: 'high',

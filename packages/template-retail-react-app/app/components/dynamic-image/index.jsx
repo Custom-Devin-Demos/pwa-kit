@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React, {useMemo} from 'react'
-import {Helmet} from 'react-helmet'
+import {Helmet} from 'react-helmet-async'
 import PropTypes from 'prop-types'
 import {Box, useTheme} from '@salesforce/retail-react-app/app/components/shared/ui'
 import {Img} from '@salesforce/retail-react-app/app/components/shared/ui'
