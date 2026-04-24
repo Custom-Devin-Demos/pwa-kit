@@ -14,7 +14,8 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import {Helmet} from 'react-helmet'
 import {ChunkExtractor} from '@loadable/server'
-import {StaticRouter as Router, matchPath} from 'react-router-dom'
+import {StaticRouter as Router} from 'react-router-dom/server'
+import {matchPath} from 'react-router-dom'
 import serialize from 'serialize-javascript'
 import PropTypes from 'prop-types'
 import sprite from 'svg-sprite-loader/runtime/sprite.build'
@@ -25,7 +26,7 @@ import {NO_CACHE} from '@salesforce/pwa-kit-runtime/ssr/server/constants'
 import {shutdownServerTracing, tracePerformance} from './opentelemetry-server'
 
 import {getAssetUrl} from '../universal/utils'
-import {ServerContext, CorrelationIdProvider} from '../universal/contexts'
+import {ServerContext, CorrelationIdProvider, SSRRedirectContext} from '../universal/contexts'
 
 import Document from '../universal/components/_document'
 import App from '../universal/components/_app'
@@ -119,6 +120,27 @@ export const getLocationSearch = (req, opts = {}) => {
 }
 
 /**
+ * Adapter to match React Router v5 matchPath behavior using v6 API.
+ * Returns a v5-compatible match object.
+ * @private
+ */
+const matchPathCompat = (pathname, route) => {
+    const pattern = {
+        path: route.path,
+        end: !!route.exact,
+        caseSensitive: false
+    }
+    const match = matchPath(pattern, pathname)
+    if (!match) return null
+    return {
+        ...match,
+        path: route.path,
+        url: match.pathname,
+        isExact: match.pathname === pathname
+    }
+}
+
+/**
  * This is the main react-rendering function for SSR. It is an Express handler.
  *
  * @param req - Request
@@ -154,7 +176,7 @@ const performRender = async (req, res, next) => {
     let match
 
     routes.some((_route) => {
-        const _match = matchPath(req.path, _route)
+        const _match = matchPathCompat(req.path, _route)
         if (_match) {
             match = _match
             route = _route
@@ -276,16 +298,26 @@ const OuterApp = ({req, res, error, App, appState, routes, routerContext, locati
 
     return (
         <ServerContext.Provider value={{req, res}}>
-            <Router location={location} context={routerContext} basename={routerBasename}>
-                <CorrelationIdProvider
-                    correlationId={res.locals.requestId}
-                    resetOnPageChange={false}
+            <SSRRedirectContext.Provider value={routerContext}>
+                <Router
+                    location={`${location.pathname}${location.search || ''}`}
+                    basename={routerBasename}
                 >
-                    <AppConfig locals={res.locals}>
-                        <Switch error={error} appState={appState} routes={routes} App={App} />
-                    </AppConfig>
-                </CorrelationIdProvider>
-            </Router>
+                    <CorrelationIdProvider
+                        correlationId={res.locals.requestId}
+                        resetOnPageChange={false}
+                    >
+                        <AppConfig locals={res.locals}>
+                            <Switch
+                                error={error}
+                                appState={appState}
+                                routes={routes}
+                                App={App}
+                            />
+                        </AppConfig>
+                    </CorrelationIdProvider>
+                </Router>
+            </SSRRedirectContext.Provider>
         </ServerContext.Provider>
     )
 }

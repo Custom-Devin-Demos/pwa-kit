@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {withRouter} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
 import PropTypes from 'prop-types'
 import Error from '../../components/_error'
 import {HTTPError} from '../../errors'
@@ -27,23 +27,12 @@ class AppErrorBoundary extends React.Component {
         this.onGetPropsError = this.onGetPropsError.bind(this)
     }
 
-    componentDidMount() {
-        const {history} = this.props
-
-        if (history) {
-            this.unlisten = history.listen(() => {
-                // Clear error state on location change. This is used when a user
-                // clicks the back button after encountering a page with an error.
-                if (this.state.error) {
-                    this.setState({error: undefined})
-                }
-            })
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.unlisten) {
-            this.unlisten()
+    componentDidUpdate(prevProps) {
+        if (
+            prevProps.location?.pathname !== this.props.location?.pathname &&
+            this.state.error
+        ) {
+            this.setState({error: undefined})
         }
     }
 
@@ -92,8 +81,13 @@ AppErrorBoundary.propTypes = {
         status: PropTypes.number.isRequired
     }),
     correlationId: PropTypes.string,
-    history: PropTypes.object
+    location: PropTypes.object
+}
+
+const AppErrorBoundaryWithLocation = (props) => {
+    const location = useLocation()
+    return <AppErrorBoundary {...props} location={location} />
 }
 
 export {AppErrorBoundary as AppErrorBoundaryWithoutRouter}
-export default withRouter(withCorrelationId(AppErrorBoundary))
+export default withCorrelationId(AppErrorBoundaryWithLocation)

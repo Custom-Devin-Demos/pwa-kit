@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React, {useEffect} from 'react'
-import {useHistory, useLocation} from 'react-router-dom'
+import {useNavigate, useLocation} from 'react-router-dom'
 import {useQueryClient} from '@tanstack/react-query'
 import logger from '../../../../utils/logger-instance'
 import {getRouterBasePath} from '../../utils'
@@ -25,7 +25,7 @@ const LOADING_SPINNER_MIN_DURATION = 500
  * @private
  */
 const Refresh = () => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
 
     let queryClient
@@ -61,7 +61,7 @@ const Refresh = () => {
                 referrer = referrer.slice(basePath.length) || '/'
             }
 
-            history.replace(referrer)
+            navigate(referrer, {replace: true})
         }
         refetchData()
     }, [])
