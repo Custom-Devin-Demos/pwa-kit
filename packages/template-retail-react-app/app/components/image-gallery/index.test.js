@@ -10,7 +10,6 @@ import PropTypes from 'prop-types'
 import {screen, fireEvent, waitFor} from '@testing-library/react'
 import ImageGallery from '@salesforce/retail-react-app/app/components/image-gallery/index'
 import {Skeleton as ImageGallerySkeleton} from '@salesforce/retail-react-app/app/components/image-gallery/index'
-import {createMemoryHistory} from 'history'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
 
 const MockComponent = ({imageGroups = [], selectedVariationAttributes = {}}) => {
@@ -39,11 +38,7 @@ describe('Image Gallery Component', () => {
     })
 
     test('can select thumbnail image with enter keyboard', async () => {
-        const history = createMemoryHistory()
-
-        renderWithProviders(
-            <MockComponent imageGroups={data} selectedVariationAttributes={{}} history={history} />
-        )
+        renderWithProviders(<MockComponent imageGroups={data} selectedVariationAttributes={{}} />)
         const thumbnailImages = screen.getAllByTestId('image-gallery-thumbnails')
         const lastThumbnailImage = thumbnailImages[thumbnailImages.length - 1]
         lastThumbnailImage.focus()
@@ -58,11 +53,7 @@ describe('Image Gallery Component', () => {
     })
 
     test('can select thumbnail image by clicking on the image', async () => {
-        const history = createMemoryHistory()
-
-        renderWithProviders(
-            <MockComponent imageGroups={data} selectedVariationAttributes={{}} history={history} />
-        )
+        renderWithProviders(<MockComponent imageGroups={data} selectedVariationAttributes={{}} />)
         const thumbnailImages = screen.getAllByTestId('image-gallery-thumbnails')
         const lastThumbnailImage = thumbnailImages[thumbnailImages.length - 1]
 

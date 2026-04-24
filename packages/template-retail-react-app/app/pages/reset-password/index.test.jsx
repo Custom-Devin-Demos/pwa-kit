@@ -20,7 +20,7 @@ jest.mock('react-router', () => {
     const original = jest.requireActual('react-router')
     return {
         ...original,
-        useRouteMatch: () => mockUseRouteMatch()
+        useMatch: () => mockUseRouteMatch()
     }
 })
 

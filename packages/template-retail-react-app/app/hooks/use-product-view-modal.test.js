@@ -6,10 +6,9 @@
  */
 
 import React from 'react'
-import {Router} from 'react-router-dom'
+import {MemoryRouter, useLocation} from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {screen, fireEvent, waitFor} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
 import {IntlProvider} from 'react-intl'
 
 import mockProductDetail from '@salesforce/retail-react-app/app/mocks/variant-750518699578M'
@@ -75,8 +74,6 @@ beforeEach(() => {
 
 describe('useProductViewModal hook', () => {
     test('returns proper data with product and isFetching state', async () => {
-        const history = createMemoryHistory()
-        history.push('/test/path')
         renderWithProviders(<MockComponent product={mockProductDetail} />)
 
         const toggleButton = screen.getByText(/Toggle the content/)
@@ -89,15 +86,12 @@ describe('useProductViewModal hook', () => {
     })
 
     test('fetches and updates product data', async () => {
-        const history = createMemoryHistory()
-        history.push('/test/path')
-
         renderWithProviders(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/test/path']}>
                 <IntlProvider locale={DEFAULT_LOCALE} defaultLocale={DEFAULT_LOCALE}>
                     <MockComponent product={mockProductDetail} />
                 </IntlProvider>
-            </Router>
+            </MemoryRouter>
         )
 
         const toggleButton = screen.getByText(/Toggle the content/)
@@ -109,11 +103,13 @@ describe('useProductViewModal hook', () => {
     })
 
     test('does not manage URL parameters (modals use React state instead)', () => {
-        const history = createMemoryHistory()
-        history.push('/test/path?color=red&size=M')
+        const LocationDisplay = () => {
+            const location = useLocation()
+            return <div data-testid="location-display">{location.search}</div>
+        }
 
         renderWithProviders(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/test/path?color=red&size=M']}>
                 <IntlProvider
                     locale={DEFAULT_LOCALE}
                     defaultLocale={DEFAULT_LOCALE}
@@ -121,7 +117,8 @@ describe('useProductViewModal hook', () => {
                 >
                     <MockComponent product={mockProductDetail} />
                 </IntlProvider>
-            </Router>
+                <LocationDisplay />
+            </MemoryRouter>
         )
 
         const toggleButton = screen.getByText(/Toggle the content/)
@@ -130,12 +127,12 @@ describe('useProductViewModal hook', () => {
         fireEvent.click(toggleButton)
 
         // URL params should remain unchanged (no URL management)
-        expect(history.location.search).toBe('?color=red&size=M')
+        expect(screen.getByTestId('location-display').textContent).toBe('?color=red&size=M')
 
         // Hide the content
         fireEvent.click(toggleButton)
 
         // URL params should still be unchanged
-        expect(history.location.search).toBe('?color=red&size=M')
+        expect(screen.getByTestId('location-display').textContent).toBe('?color=red&size=M')
     })
 })

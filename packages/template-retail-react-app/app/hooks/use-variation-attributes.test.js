@@ -6,10 +6,9 @@
  */
 
 import React from 'react'
-import {Router} from 'react-router'
+import {MemoryRouter} from 'react-router-dom'
 
 import {render} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
 import {useVariationAttributes} from '@salesforce/retail-react-app/app/hooks/use-variation-attributes'
 
 // Below is a partial product used for mocking purposes. Note: only the properties
@@ -147,12 +146,10 @@ const MultiVariantTestComponent = () => {
 
 describe('The useVariationAttributes', () => {
     test('returns variation attributes decorated with hrefs and images.', () => {
-        const history = createMemoryHistory()
-        history.push('/test/path?color=blue&size=2')
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/test/path?color=blue&size=2']}>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
         expect(wrapper.getByTestId('variationAttributes').text).toBe(
             '[{"id":"color","name":"Color","values":[{"name":"Black","orderable":false,"value":"001","image":{"alt":"Basic Leg Trousers, Black, swatch","disBaseLink":"https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/ZZRF_001/on/demandware.static/-/Sites-apparel-m-catalog/default/dw6cc11129/images/swatch/90011212_001_sw.jpg","link":"https://zzrf-001.dx.commercecloud.salesforce.com/on/demandware.static/-/Sites-apparel-m-catalog/default/dw6cc11129/images/swatch/90011212_001_sw.jpg","title":"Basic Leg Trousers, Black"},"href":"/test/path?color=001&size=2"}],"selectedValue":{"value":"blue"}},{"id":"size","name":"Size","values":[{"name":"28","orderable":false,"value":"28","href":"/test/path?color=blue&size=28"}],"selectedValue":{"value":"2"}}]'
@@ -161,13 +158,10 @@ describe('The useVariationAttributes', () => {
 
     describe('Hook Level Behavior (No Filtering)', () => {
         test('useVariationAttributes shows all variants regardless of bonus product context', () => {
-            const history = createMemoryHistory()
-            history.push('/test/path')
-
             const wrapper = render(
-                <Router history={history}>
+                <MemoryRouter initialEntries={['/test/path']}>
                     <MultiVariantTestComponent />
-                </Router>
+                </MemoryRouter>
             )
 
             const result = JSON.parse(wrapper.getByTestId('multiVariantAttributes').textContent)
@@ -180,9 +174,6 @@ describe('The useVariationAttributes', () => {
         })
 
         test('useVariationAttributes maintains original interface without bonus product parameters', () => {
-            const history = createMemoryHistory()
-            history.push('/test/path')
-
             // Test that the hook works without bonus product parameters
             const MockComponentNoBonus = () => {
                 const params = useVariationAttributes(MockMultiVariantProduct, false, false)
@@ -194,9 +185,9 @@ describe('The useVariationAttributes', () => {
             }
 
             const wrapper = render(
-                <Router history={history}>
+                <MemoryRouter initialEntries={['/test/path']}>
                     <MockComponentNoBonus />
-                </Router>
+                </MemoryRouter>
             )
 
             const result = JSON.parse(wrapper.getByTestId('noBonus').textContent)

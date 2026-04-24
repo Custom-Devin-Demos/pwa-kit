@@ -10,7 +10,7 @@ import {
     mockCustomerBaskets,
     mockedCustomerProductLists
 } from '@salesforce/retail-react-app/app/mocks/mock-data'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Routes} from 'react-router-dom'
 import {rest} from 'msw'
 import ProductDetail from '.'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
@@ -132,12 +132,9 @@ jest.mock('@salesforce/retail-react-app/app/hooks/use-multiship', () => ({
 
 const MockedComponent = () => {
     return (
-        <Switch>
-            <Route
-                path="/uk/en-GB/product/:productId"
-                render={(props) => <ProductDetail {...props} />}
-            />
-        </Switch>
+        <Routes>
+            <Route path="/uk/en-GB/product/:productId" element={<ProductDetail />} />
+        </Routes>
     )
 }
 

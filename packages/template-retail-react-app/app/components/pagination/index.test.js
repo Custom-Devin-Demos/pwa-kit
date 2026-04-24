@@ -9,13 +9,11 @@ import {screen, fireEvent} from '@testing-library/react'
 import Pagination from '@salesforce/retail-react-app/app/components/pagination/index'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
 
-// mock the useHistory
-const mockPush = jest.fn()
+// mock the useNavigate
+const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
-    useHistory: () => ({
-        push: mockPush
-    })
+    useNavigate: () => mockNavigate
 }))
 
 describe('Pagination', () => {
@@ -26,7 +24,7 @@ describe('Pagination', () => {
     }
 
     beforeEach(() => {
-        mockPush.mockClear()
+        mockNavigate.mockClear()
     })
 
     it('Renders Pagination and its elements', () => {
@@ -72,7 +70,7 @@ describe('Pagination', () => {
         renderWithProviders(<Pagination {...defaultProps} />)
         const select = screen.getByLabelText('Select page number')
         fireEvent.change(select, {target: {value: '/test?offset=50'}})
-        expect(mockPush).toHaveBeenCalledWith('/test?offset=50')
+        expect(mockNavigate).toHaveBeenCalledWith('/test?offset=50')
     })
 
     it('renders all page options in select', () => {

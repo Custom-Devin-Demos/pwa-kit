@@ -6,10 +6,9 @@
  */
 
 import React from 'react'
-import {Router} from 'react-router'
+import {MemoryRouter} from 'react-router-dom'
 
 import {render} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
 import {
     useSearchParams,
     stringify,
@@ -28,13 +27,10 @@ const MockComponent = () => {
 
 describe('The useSearchParams', () => {
     test('returns an object with the default search params when none are present in the url.', () => {
-        const history = createMemoryHistory()
-        history.push('/test/path')
-
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/test/path']}>
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('limits').text).toBe(
@@ -43,15 +39,14 @@ describe('The useSearchParams', () => {
     })
 
     test('returns an object with the parsed search params.', () => {
-        const history = createMemoryHistory()
-        history.push(
-            '/test/path?limit=25&offset=0&refine=c_refinementColor%3DBlack%7CPurple&sort=best-matches'
-        )
-
         const wrapper = render(
-            <Router history={history}>
+            <MemoryRouter
+                initialEntries={[
+                    '/test/path?limit=25&offset=0&refine=c_refinementColor%3DBlack%7CPurple&sort=best-matches'
+                ]}
+            >
                 <MockComponent />
-            </Router>
+            </MemoryRouter>
         )
 
         expect(wrapper.getByTestId('limits').text).toBe(

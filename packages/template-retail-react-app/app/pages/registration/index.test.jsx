@@ -12,7 +12,7 @@ import {
     renderWithProviders
 } from '@salesforce/retail-react-app/app/utils/test-utils'
 import Registration from '.'
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import Account from '@salesforce/retail-react-app/app/pages/account'
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'
 import {rest} from 'msw'
@@ -24,10 +24,10 @@ const MockedComponent = () => {
     }
     return (
         <Router>
-            <Registration />
-            <Route path={'/uk/en-GB/account'}>
-                <Account match={match} />
-            </Route>
+            <Routes>
+                <Route path={'*'} element={<Registration />} />
+                <Route path={'/uk/en-GB/account'} element={<Account match={match} />} />
+            </Routes>
         </Router>
     )
 }
