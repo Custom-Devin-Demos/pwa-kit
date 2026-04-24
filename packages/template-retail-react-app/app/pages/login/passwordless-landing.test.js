@@ -74,11 +74,6 @@ beforeEach(() => {
     jest.clearAllMocks()
     getConfig.mockReturnValue(mockConfig)
 
-    // Reset useRouteMatch mock to return path based on window.location.pathname
-    mockUseRouteMatch.mockImplementation(() => ({
-        path: typeof window !== 'undefined' && window.location ? window.location.pathname : '/'
-    }))
-
     global.server.use(
         rest.post('*/customers', (req, res, ctx) => {
             return res(ctx.delay(0), ctx.status(200), ctx.json(mockedRegisteredCustomer))

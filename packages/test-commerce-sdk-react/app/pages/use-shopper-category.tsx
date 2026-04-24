@@ -12,7 +12,7 @@ import Json from '../components/Json'
 import {flatten} from '../utils/utils'
 
 function UseShopperCategory() {
-    const {categoryId} = useParams<{categoryId: string}>()
+    const {categoryId} = useParams<{categoryId: string}>() as {categoryId: string}
     const {isLoading, error, data} = useCategory({
         parameters: {
             id: categoryId

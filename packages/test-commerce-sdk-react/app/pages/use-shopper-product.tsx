@@ -10,7 +10,7 @@ import Json from '../components/Json'
 import {Link, useParams} from 'react-router-dom'
 
 function UseShopperProduct() {
-    const {productId} = useParams<{productId: string}>()
+    const {productId} = useParams<{productId: string}>() as {productId: string}
     const {data, isLoading, error} = useProduct({parameters: {id: productId}})
     if (isLoading) {
         return (
