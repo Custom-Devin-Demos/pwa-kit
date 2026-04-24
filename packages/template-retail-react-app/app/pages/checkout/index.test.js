@@ -6,7 +6,7 @@
  */
 import React from 'react'
 import CheckoutContainer from '@salesforce/retail-react-app/app/pages/checkout/index'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Routes} from 'react-router-dom'
 import {screen, waitFor, within} from '@testing-library/react'
 import {rest} from 'msw'
 import {
@@ -85,19 +85,15 @@ const defaultShippingMethod = mockShippingMethods.applicableShippingMethods.find
 // fake routes to simulate moving from checkout to confirmation page.
 const WrappedCheckout = () => {
     return (
-        <Switch>
-            <Route exact path={createPathWithDefaults('/checkout')}>
-                <CheckoutContainer />
-            </Route>
+        <Routes>
+            <Route path={createPathWithDefaults('/checkout')} element={<CheckoutContainer />} />
             <Route
-                exact
                 path={createPathWithDefaults(
                     `/checkout/confirmation/${scapiOrderResponse.orderNo}`
                 )}
-            >
-                <div>success</div>
-            </Route>
-        </Switch>
+                element={<div>success</div>}
+            />
+        </Routes>
     )
 }
 

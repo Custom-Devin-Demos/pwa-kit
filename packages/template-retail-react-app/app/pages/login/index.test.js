@@ -13,7 +13,7 @@ import {
     guestToken
 } from '@salesforce/retail-react-app/app/utils/test-utils'
 import Login from '.'
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import Account from '@salesforce/retail-react-app/app/pages/account'
 import Registration from '@salesforce/retail-react-app/app/pages/registration'
 import ResetPassword from '@salesforce/retail-react-app/app/pages/reset-password'
@@ -41,16 +41,12 @@ const MockedComponent = () => {
 
     return (
         <Router>
-            <Login />
-            <Route path={createPathWithDefaults('/registration')}>
-                <Registration />
-            </Route>
-            <Route path={createPathWithDefaults('/reset-password')}>
-                <ResetPassword />
-            </Route>
-            <Route path={createPathWithDefaults('/account')}>
-                <Account match={match} />
-            </Route>
+            <Routes>
+                <Route path={'*'} element={<Login />} />
+                <Route path={createPathWithDefaults('/registration')} element={<Registration />} />
+                <Route path={createPathWithDefaults('/reset-password')} element={<ResetPassword />} />
+                <Route path={createPathWithDefaults('/account')} element={<Account match={match} />} />
+            </Routes>
         </Router>
     )
 }

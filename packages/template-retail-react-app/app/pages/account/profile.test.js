@@ -17,17 +17,15 @@ import {
     mockedRegisteredCustomer
 } from '@salesforce/retail-react-app/app/mocks/mock-data'
 
-import {Route, Switch} from 'react-router-dom'
+import {Route, Routes} from 'react-router-dom'
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'
 import * as sdk from '@salesforce/commerce-sdk-react'
 
 const MockedComponent = () => {
     return (
-        <Switch>
-            <Route path={createPathWithDefaults('/account')}>
-                <AccountDetail />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route path={createPathWithDefaults('/account')} element={<AccountDetail />} />
+        </Routes>
     )
 }
 

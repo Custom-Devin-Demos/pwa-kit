@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {createMemoryHistory} from 'history'
-import {Router, useHistory, useLocation} from 'react-router-dom'
+import {MemoryRouter, useNavigate, useLocation} from 'react-router-dom'
 import {screen, fireEvent, waitFor} from '@testing-library/react'
 
 import {Box} from '@salesforce/retail-react-app/app/components/shared/ui'
@@ -65,9 +64,14 @@ const data = {
     ]
 }
 
+const LocationDisplay = () => {
+    const location = useLocation()
+    return <div data-testid="location-display">{location.search}</div>
+}
+
 const Page = () => {
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
     const params = new URLSearchParams(location.search)
     const selectedColor = data.values.find(({value}) => {
         return value === params.get('color')
@@ -83,7 +87,7 @@ const Page = () => {
             name={data.name}
             onChange={(_, href) => {
                 if (!href) return
-                history.replace(href)
+                navigate(href, {replace: true})
             }}
         >
             {data.values.map(({value, name, image, orderable, href}) => {
@@ -112,43 +116,36 @@ const Page = () => {
 
 describe('Swatch Component', () => {
     test('renders component', () => {
-        const history = createMemoryHistory()
-        history.push('/en-GB/swatch-example?color=JJ2XNXX')
-
         renderWithProviders(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/en-GB/swatch-example?color=JJ2XNXX']}>
                 <Page />
-            </Router>
+            </MemoryRouter>
         )
         expect(screen.getAllByRole('radio')).toHaveLength(data.values.length)
     })
 
     test('swatch can be selected', async () => {
-        const history = createMemoryHistory()
-        history.push('/en-GB/swatch-example')
-
         renderWithProviders(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/en-GB/swatch-example']}>
                 <Page />
-            </Router>
+                <LocationDisplay />
+            </MemoryRouter>
         )
 
         expect(screen.getAllByRole('radio')).toHaveLength(data.values.length)
         const firstSwatch = screen.getAllByRole('radio')[0]
         fireEvent.click(firstSwatch)
         await waitFor(() => {
-            expect(history.location.search).toBe('?color=BLACKFB')
+            expect(screen.getByTestId('location-display').textContent).toBe('?color=BLACKFB')
         })
     })
 
     test('swatch can be changed with arrow keys', async () => {
-        const history = createMemoryHistory()
-        history.push('/en-GB/swatch-example?color=JJ2XNXX')
-
         renderWithProviders(
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/en-GB/swatch-example?color=JJ2XNXX']}>
                 <Page />
-            </Router>
+                <LocationDisplay />
+            </MemoryRouter>
         )
 
         expect(screen.getAllByRole('radio')).toHaveLength(data.values.length)
@@ -183,14 +180,14 @@ describe('Swatch Component', () => {
 
         // Test initial state
         await waitFor(() => {
-            expect(history.location.search).toBe('?color=JJ2XNXX')
+            expect(screen.getByTestId('location-display').textContent).toBe('?color=JJ2XNXX')
         })
 
         // Navigate according to the event array. This also tests that looping over the end or front works.
         keyDownEvents.forEach(async ({keyEvent, expectedValue}) => {
             fireEvent.keyDown(swatchGroup, keyEvent)
             await waitFor(() => {
-                expect(history.location.search).toBe(`?color=${expectedValue}`)
+                expect(screen.getByTestId('location-display').textContent).toBe(`?color=${expectedValue}`)
             })
         })
     })

@@ -10,7 +10,7 @@ import AppConfig from '@salesforce/retail-react-app/app/components/_app-config/i
 
 import {CorrelationIdProvider} from '@salesforce/pwa-kit-react-sdk/ssr/universal/contexts'
 import {uuidv4} from '@salesforce/pwa-kit-react-sdk/utils/uuidv4.client'
-import {StaticRouter} from 'react-router-dom'
+import {StaticRouter} from 'react-router-dom/server'
 
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'
 import {rest} from 'msw'

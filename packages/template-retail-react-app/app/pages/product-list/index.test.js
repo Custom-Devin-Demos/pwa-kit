@@ -15,7 +15,7 @@ import {
     mockCategories
 } from '@salesforce/retail-react-app/app/mocks/mock-data'
 import {screen, waitFor} from '@testing-library/react'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Routes} from 'react-router-dom'
 import {
     createPathWithDefaults,
     renderWithProviders
@@ -72,19 +72,24 @@ let mockProductListSearchResponse = mockProductSearch
 
 const MockedComponent = ({isLoading}) => {
     return (
-        <Switch>
+        <Routes>
             <Route
-                path={[
-                    createPathWithDefaults('/category/:categoryId'),
-                    createPathWithDefaults('/search')
-                ]}
-                render={(props) => (
+                path={createPathWithDefaults('/category/:categoryId')}
+                element={
                     <div>
-                        <ProductList {...props} isLoading={isLoading} />
+                        <ProductList isLoading={isLoading} />
                     </div>
-                )}
+                }
             />
-        </Switch>
+            <Route
+                path={createPathWithDefaults('/search')}
+                element={
+                    <div>
+                        <ProductList isLoading={isLoading} />
+                    </div>
+                }
+            />
+        </Routes>
     )
 }
 

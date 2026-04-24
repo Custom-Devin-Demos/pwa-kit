@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Routes} from 'react-router-dom'
 import {screen, waitFor, within} from '@testing-library/react'
 import {rest} from 'msw'
 import {
@@ -33,16 +33,10 @@ jest.mock('@salesforce/commerce-sdk-react', () => ({
 
 const MockedComponent = () => {
     return (
-        <Switch>
-            <Route
-                path={createPathWithDefaults('/account')}
-                render={(props) => <Account {...props} />}
-            />
-            <Route
-                path={createPathWithDefaults('/login')}
-                render={(props) => <Login {...props} />}
-            />
-        </Switch>
+        <Routes>
+            <Route path={createPathWithDefaults('/account')} element={<Account />} />
+            <Route path={createPathWithDefaults('/login')} element={<Login />} />
+        </Routes>
     )
 }
 

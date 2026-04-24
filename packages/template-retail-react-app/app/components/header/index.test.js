@@ -14,7 +14,6 @@ import {
     createPathWithDefaults
 } from '@salesforce/retail-react-app/app/utils/test-utils'
 import {rest} from 'msw'
-import {createMemoryHistory} from 'history'
 import {
     mockCustomerBaskets,
     mockedRegisteredCustomer
@@ -35,12 +34,12 @@ jest.mock('@salesforce/retail-react-app/app/components/shared/ui', () => {
 jest.mock('@salesforce/retail-react-app/app/utils/config-utils', () => ({
     getCommerceAgentConfig: jest.fn()
 }))
-const MockedComponent = ({history}) => {
+const MockedComponent = ({navigate}) => {
     const onAccountClick = () => {
-        history.push(createPathWithDefaults('/account'))
+        navigate(createPathWithDefaults('/account'))
     }
     const onWishlistClick = () => {
-        history.push(createPathWithDefaults('/account/wishlist'))
+        navigate(createPathWithDefaults('/account/wishlist'))
     }
     return (
         <div>
@@ -49,7 +48,7 @@ const MockedComponent = ({history}) => {
     )
 }
 MockedComponent.propTypes = {
-    history: PropTypes.object
+    navigate: PropTypes.func
 }
 
 // Set up and clean up
@@ -157,10 +156,8 @@ test('renders cart badge when basket is loaded', async () => {
 })
 
 test('route to account page when an authenticated users click on account icon', async () => {
-    const history = createMemoryHistory()
-    // mock push function
-    history.push = jest.fn()
-    renderWithProviders(<MockedComponent history={history} />)
+    const navigate = jest.fn()
+    renderWithProviders(<MockedComponent navigate={navigate} />)
 
     await waitFor(() => {
         // Look for account icon
@@ -170,22 +167,20 @@ test('route to account page when an authenticated users click on account icon', 
     const accountIcon = screen.getByLabelText('My Account')
     fireEvent.click(accountIcon)
     await waitFor(() => {
-        expect(history.push).toHaveBeenCalledWith(createPathWithDefaults('/account'))
+        expect(navigate).toHaveBeenCalledWith(createPathWithDefaults('/account'))
     })
 
     fireEvent.keyDown(accountIcon, {key: 'Enter', code: 'Enter'})
     await waitFor(() => {
-        expect(history.push).toHaveBeenCalledWith(createPathWithDefaults('/account'))
+        expect(navigate).toHaveBeenCalledWith(createPathWithDefaults('/account'))
     })
 })
 
 test('route to wishlist page when an authenticated users click on wishlist icon', async () => {
     const user = userEvent.setup()
-    const history = createMemoryHistory()
-    // mock push function
-    history.push = jest.fn()
+    const navigate = jest.fn()
 
-    renderWithProviders(<MockedComponent history={history} />)
+    renderWithProviders(<MockedComponent navigate={navigate} />)
 
     await waitFor(() => {
         // Look for account icon
@@ -195,7 +190,7 @@ test('route to wishlist page when an authenticated users click on wishlist icon'
     const wishlistIcon = screen.getByRole('button', {name: /wishlist/i})
     await user.click(wishlistIcon)
     await waitFor(() => {
-        expect(history.push).toHaveBeenCalledWith(createPathWithDefaults('/account/wishlist'))
+        expect(navigate).toHaveBeenCalledWith(createPathWithDefaults('/account/wishlist'))
     })
 })
 
@@ -206,11 +201,9 @@ test('shows dropdown menu when an authenticated users hover on the account icon'
             return res(ctx.delay(0), ctx.status(200), ctx.json(mockedRegisteredCustomer))
         })
     )
-    const history = createMemoryHistory()
-    // mock push function
-    history.push = jest.fn()
+    const navigate = jest.fn()
     await act(async () => {
-        renderWithProviders(<MockedComponent history={history} />)
+        renderWithProviders(<MockedComponent navigate={navigate} />)
     })
 
     await waitFor(() => {
@@ -221,7 +214,7 @@ test('shows dropdown menu when an authenticated users hover on the account icon'
     const accountIcon = screen.getByLabelText('My Account')
     fireEvent.click(accountIcon)
     await waitFor(() => {
-        expect(history.push).toHaveBeenCalledWith(createPathWithDefaults('/account'))
+        expect(navigate).toHaveBeenCalledWith(createPathWithDefaults('/account'))
     })
     await user.hover(accountIcon)
 

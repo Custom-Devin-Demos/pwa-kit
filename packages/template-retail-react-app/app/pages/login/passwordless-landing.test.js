@@ -12,7 +12,7 @@ import {
     createPathWithDefaults
 } from '@salesforce/retail-react-app/app/utils/test-utils'
 import Login from '.'
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import Account from '@salesforce/retail-react-app/app/pages/account'
 import mockConfig from '@salesforce/retail-react-app/config/mocks/default'
 import {mockedRegisteredCustomer} from '@salesforce/retail-react-app/app/mocks/mock-data'
@@ -42,10 +42,10 @@ const MockedComponent = () => {
     }
     return (
         <Router>
-            <Login />
-            <Route path={createPathWithDefaults('/account')}>
-                <Account match={match} />
-            </Route>
+            <Routes>
+                <Route path={'*'} element={<Login />} />
+                <Route path={createPathWithDefaults('/account')} element={<Account match={match} />} />
+            </Routes>
         </Router>
     )
 }
@@ -56,7 +56,7 @@ jest.mock('react-router', () => {
     const original = jest.requireActual('react-router')
     return {
         ...original,
-        useRouteMatch: () => mockUseRouteMatch()
+        useMatch: () => mockUseRouteMatch()
     }
 })
 

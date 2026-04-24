@@ -6,9 +6,8 @@
  */
 
 import React from 'react'
-import {Router} from 'react-router'
+import {MemoryRouter} from 'react-router-dom'
 import {renderHook} from '@testing-library/react'
-import {createMemoryHistory} from 'history'
 import {
     useShopperContextSearchParams,
     getShopperContextFromSearchParams
@@ -24,19 +23,13 @@ afterEach(() => {
 
 describe('useShopperContextSearchParams', () => {
     test('returns an empty object when no search params are present', () => {
-        const history = createMemoryHistory()
-        history.push('')
-
-        const wrapper = ({children}) => <Router history={history}>{children}</Router>
+        const wrapper = ({children}) => <MemoryRouter initialEntries={['']}>{children}</MemoryRouter>
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({})
     })
 
     test('returns an empty object when search params not related to shopper context are present', () => {
-        const history = createMemoryHistory()
-        history.push('?a=1&b=2&c=3')
-
-        const wrapper = ({children}) => <Router history={history}>{children}</Router>
+        const wrapper = ({children}) => <MemoryRouter initialEntries={['?a=1&b=2&c=3']}>{children}</MemoryRouter>
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({})
     })
@@ -45,10 +38,7 @@ describe('useShopperContextSearchParams', () => {
         const originalCustomQualifiers = SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers
         SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers = {a: {paramName: 'a'}, b: {paramName: 'b'}}
 
-        const history = createMemoryHistory()
-        history.push('?a=1&b=2&c=3')
-
-        const wrapper = ({children}) => <Router history={history}>{children}</Router>
+        const wrapper = ({children}) => <MemoryRouter initialEntries={['?a=1&b=2&c=3']}>{children}</MemoryRouter>
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({customQualifiers: {a: '1', b: '2'}})
 
@@ -61,10 +51,10 @@ describe('useShopperContextSearchParams', () => {
         SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers = {deviceType: {paramName: 'deviceType'}}
         SHOPPER_CONTEXT_SEARCH_PARAMS.assignmentQualifiers = {storeId: {paramName: 'storeId'}}
 
-        const history = createMemoryHistory()
-        history.push(
-            // Source code
-            '?sourceCode=instagram' +
+        const wrapper = ({children}) => (
+            <MemoryRouter initialEntries={[
+                // Source code
+                '?sourceCode=instagram' +
                 // GeoLocation
                 '&countryCode=CA&city=toronto&latitude=11.1111&longitude=22.2222&metroCode=AB&postalCode=A3B2C5&region=soemwhere&regionCode=ZZ' +
                 // Custom Qualifiers
@@ -73,9 +63,8 @@ describe('useShopperContextSearchParams', () => {
                 '&storeId=boston' +
                 // Non Shopper Context Params
                 '&a=1&b=2&c=3'
+            ]}>{children}</MemoryRouter>
         )
-
-        const wrapper = ({children}) => <Router history={history}>{children}</Router>
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({
             sourceCode: 'instagram',

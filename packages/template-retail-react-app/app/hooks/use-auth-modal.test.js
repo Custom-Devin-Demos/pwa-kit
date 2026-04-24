@@ -20,7 +20,7 @@ import {
     useAuthModal,
     EMAIL_VIEW
 } from '@salesforce/retail-react-app/app/hooks/use-auth-modal'
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import Account from '@salesforce/retail-react-app/app/pages/account'
 import {rest} from 'msw'
 import {mockedRegisteredCustomer} from '@salesforce/retail-react-app/app/mocks/mock-data'
@@ -70,9 +70,9 @@ const MockedComponent = (props) => {
         <Router>
             <button onClick={authModal.onOpen}>Open Modal</button>
             <AuthModal {...authModal} isPasswordlessEnabled={isPasswordlessEnabled} />
-            <Route path={createPathWithDefaults('/account')}>
-                <Account match={match} />
-            </Route>
+            <Routes>
+                <Route path={createPathWithDefaults('/account')} element={<Account match={match} />} />
+            </Routes>
         </Router>
     )
 }
