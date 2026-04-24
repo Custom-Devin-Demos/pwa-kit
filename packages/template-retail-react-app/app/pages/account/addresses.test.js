@@ -25,7 +25,10 @@ let mockCustomer = {}
 const MockedComponent = () => {
     return (
         <Routes>
-            <Route path={createPathWithDefaults('/account/addresses')} element={<AccountAddresses />} />
+            <Route
+                path={createPathWithDefaults('/account/addresses')}
+                element={<AccountAddresses />}
+            />
         </Routes>
     )
 }

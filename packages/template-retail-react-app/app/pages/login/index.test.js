@@ -44,8 +44,14 @@ const MockedComponent = () => {
             <Routes>
                 <Route path={'*'} element={<Login />} />
                 <Route path={createPathWithDefaults('/registration')} element={<Registration />} />
-                <Route path={createPathWithDefaults('/reset-password')} element={<ResetPassword />} />
-                <Route path={createPathWithDefaults('/account')} element={<Account match={match} />} />
+                <Route
+                    path={createPathWithDefaults('/reset-password')}
+                    element={<ResetPassword />}
+                />
+                <Route
+                    path={createPathWithDefaults('/account')}
+                    element={<Account match={match} />}
+                />
             </Routes>
         </Router>
     )

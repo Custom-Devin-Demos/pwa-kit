@@ -71,7 +71,10 @@ const MockedComponent = (props) => {
             <button onClick={authModal.onOpen}>Open Modal</button>
             <AuthModal {...authModal} isPasswordlessEnabled={isPasswordlessEnabled} />
             <Routes>
-                <Route path={createPathWithDefaults('/account')} element={<Account match={match} />} />
+                <Route
+                    path={createPathWithDefaults('/account')}
+                    element={<Account match={match} />}
+                />
             </Routes>
         </Router>
     )

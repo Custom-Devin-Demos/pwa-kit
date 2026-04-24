@@ -40,7 +40,11 @@ describe('The useSearchParams', () => {
 
     test('returns an object with the parsed search params.', () => {
         const wrapper = render(
-            <MemoryRouter initialEntries={['/test/path?limit=25&offset=0&refine=c_refinementColor%3DBlack%7CPurple&sort=best-matches']}>
+            <MemoryRouter
+                initialEntries={[
+                    '/test/path?limit=25&offset=0&refine=c_refinementColor%3DBlack%7CPurple&sort=best-matches'
+                ]}
+            >
                 <MockComponent />
             </MemoryRouter>
         )

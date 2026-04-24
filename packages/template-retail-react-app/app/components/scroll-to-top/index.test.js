@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
+import PropTypes from 'prop-types'
 import {render, waitFor, fireEvent} from '@testing-library/react'
 import ScrollToTop from '@salesforce/retail-react-app/app/components/scroll-to-top/index'
 import {MemoryRouter, useNavigate} from 'react-router-dom'
@@ -14,6 +15,10 @@ global.scrollTo = jest.fn()
 const NavigateButton = ({to, testId}) => {
     const navigate = useNavigate()
     return <button data-testid={testId} onClick={() => navigate(to)} />
+}
+NavigateButton.propTypes = {
+    to: PropTypes.string,
+    testId: PropTypes.string
 }
 
 describe('ScrollToTop', () => {

@@ -42,7 +42,10 @@ jest.mock('@salesforce/pwa-kit-runtime/utils/ssr-config', () => {
 const MockedComponent = () => {
     return (
         <Routes>
-            <Route path={createPathWithDefaults('/checkout/confirmation/:orderNo')} element={<Confirmation />} />
+            <Route
+                path={createPathWithDefaults('/checkout/confirmation/:orderNo')}
+                element={<Confirmation />}
+            />
         </Routes>
     )
 }

@@ -187,7 +187,9 @@ describe('Swatch Component', () => {
         keyDownEvents.forEach(async ({keyEvent, expectedValue}) => {
             fireEvent.keyDown(swatchGroup, keyEvent)
             await waitFor(() => {
-                expect(screen.getByTestId('location-display').textContent).toBe(`?color=${expectedValue}`)
+                expect(screen.getByTestId('location-display').textContent).toBe(
+                    `?color=${expectedValue}`
+                )
             })
         })
     })

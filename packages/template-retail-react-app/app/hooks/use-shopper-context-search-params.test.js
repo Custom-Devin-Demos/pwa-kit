@@ -23,13 +23,17 @@ afterEach(() => {
 
 describe('useShopperContextSearchParams', () => {
     test('returns an empty object when no search params are present', () => {
-        const wrapper = ({children}) => <MemoryRouter initialEntries={['']}>{children}</MemoryRouter>
+        const wrapper = ({children}) => (
+            <MemoryRouter initialEntries={['']}>{children}</MemoryRouter>
+        )
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({})
     })
 
     test('returns an empty object when search params not related to shopper context are present', () => {
-        const wrapper = ({children}) => <MemoryRouter initialEntries={['?a=1&b=2&c=3']}>{children}</MemoryRouter>
+        const wrapper = ({children}) => (
+            <MemoryRouter initialEntries={['?a=1&b=2&c=3']}>{children}</MemoryRouter>
+        )
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({})
     })
@@ -38,7 +42,9 @@ describe('useShopperContextSearchParams', () => {
         const originalCustomQualifiers = SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers
         SHOPPER_CONTEXT_SEARCH_PARAMS.customQualifiers = {a: {paramName: 'a'}, b: {paramName: 'b'}}
 
-        const wrapper = ({children}) => <MemoryRouter initialEntries={['?a=1&b=2&c=3']}>{children}</MemoryRouter>
+        const wrapper = ({children}) => (
+            <MemoryRouter initialEntries={['?a=1&b=2&c=3']}>{children}</MemoryRouter>
+        )
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({customQualifiers: {a: '1', b: '2'}})
 
@@ -52,18 +58,22 @@ describe('useShopperContextSearchParams', () => {
         SHOPPER_CONTEXT_SEARCH_PARAMS.assignmentQualifiers = {storeId: {paramName: 'storeId'}}
 
         const wrapper = ({children}) => (
-            <MemoryRouter initialEntries={[
-                // Source code
-                '?sourceCode=instagram' +
-                // GeoLocation
-                '&countryCode=CA&city=toronto&latitude=11.1111&longitude=22.2222&metroCode=AB&postalCode=A3B2C5&region=soemwhere&regionCode=ZZ' +
-                // Custom Qualifiers
-                '&deviceType=mobile' +
-                // Assignment Qualifiers
-                '&storeId=boston' +
-                // Non Shopper Context Params
-                '&a=1&b=2&c=3'
-            ]}>{children}</MemoryRouter>
+            <MemoryRouter
+                initialEntries={[
+                    // Source code
+                    '?sourceCode=instagram' +
+                        // GeoLocation
+                        '&countryCode=CA&city=toronto&latitude=11.1111&longitude=22.2222&metroCode=AB&postalCode=A3B2C5&region=soemwhere&regionCode=ZZ' +
+                        // Custom Qualifiers
+                        '&deviceType=mobile' +
+                        // Assignment Qualifiers
+                        '&storeId=boston' +
+                        // Non Shopper Context Params
+                        '&a=1&b=2&c=3'
+                ]}
+            >
+                {children}
+            </MemoryRouter>
         )
         const {result} = renderHook(() => useShopperContextSearchParams(), {wrapper})
         expect(result.current).toEqual({

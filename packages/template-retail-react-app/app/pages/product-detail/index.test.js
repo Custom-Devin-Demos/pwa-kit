@@ -133,10 +133,7 @@ jest.mock('@salesforce/retail-react-app/app/hooks/use-multiship', () => ({
 const MockedComponent = () => {
     return (
         <Routes>
-            <Route
-                path="/uk/en-GB/product/:productId"
-                element={<ProductDetail />}
-            />
+            <Route path="/uk/en-GB/product/:productId" element={<ProductDetail />} />
         </Routes>
     )
 }

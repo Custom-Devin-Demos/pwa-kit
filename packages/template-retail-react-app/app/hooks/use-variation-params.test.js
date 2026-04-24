@@ -48,7 +48,9 @@ describe('The useVariationParams', () => {
 
     test('returns correct params when there are non-product params in the url.', () => {
         const wrapper = render(
-            <MemoryRouter initialEntries={['/test/path?color=blue&size=2&nonproductattribute=true']}>
+            <MemoryRouter
+                initialEntries={['/test/path?color=blue&size=2&nonproductattribute=true']}
+            >
                 <MockComponent />
             </MemoryRouter>
         )
