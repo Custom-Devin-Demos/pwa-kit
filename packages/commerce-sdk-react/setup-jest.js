@@ -7,6 +7,14 @@
 import '@testing-library/jest-dom'
 import nock from 'nock'
 
+// Override requestAnimationFrame to run synchronously so that react-helmet-async
+// commits DOM changes (link, meta, title tags) before test assertions execute.
+global.requestAnimationFrame = (cb) => {
+    cb(Date.now())
+    return 0
+}
+global.cancelAnimationFrame = () => {}
+
 // set jsdom in https context to allow read/write secure cookies
 global.jsdom.reconfigure({url: 'https://www.domain.com'})
 

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import React from 'react'
-import {render} from '@testing-library/react'
+import {render, waitFor} from '@testing-library/react'
 import Page from './index'
 import {HelmetProvider} from 'react-helmet-async'
 import type {PageWithDesignMetadata} from '../types'
@@ -93,7 +93,7 @@ afterEach(() => {
     jest.restoreAllMocks()
 })
 
-test('Page renders without errors', () => {
+test('Page renders without errors', async () => {
     const {container} = render(
         <HelmetProvider>
             <Page page={SAMPLE_PAGE} components={{}} />
@@ -104,7 +104,9 @@ test('Page renders without errors', () => {
     expect(container.querySelector('[id=samplepage]')).toBeInTheDocument()
 
     // Meta data and title are set
-    expect(document.title).toBe('title')
+    await waitFor(() => {
+        expect(document.title).toBe('title')
+    })
     expect(document.querySelector('meta[name="description"][content="description"]')).toBeTruthy()
     expect(document.querySelector('meta[name="keywords"][content="keywords"]')).toBeTruthy()
 

@@ -6,6 +6,7 @@
  */
 import React from 'react'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
+import {waitFor} from '@testing-library/react'
 import HomePage from '@salesforce/retail-react-app/app/pages/home'
 import {rest} from 'msw'
 import {mockProductSearch} from '@salesforce/retail-react-app/app/mocks/mock-data'
@@ -26,8 +27,10 @@ test('Home Page renders without errors', async () => {
     expect(getByTestId('home-page')).toBeInTheDocument()
     expect(typeof HomePage.getTemplateName()).toBe('string')
 
+    await waitFor(() => {
+        expect(document.querySelectorAll('link[data-rh="true"]')).toHaveLength(1)
+    })
     const preloadLinks = document.querySelectorAll('link[data-rh="true"]')
-    expect(preloadLinks).toHaveLength(1)
     expect(preloadLinks[0].getAttribute('as')).toBe('image')
     expect(preloadLinks[0].getAttribute('href')).toBe(
         '/mobify/bundle/development/static/img/hero.png'

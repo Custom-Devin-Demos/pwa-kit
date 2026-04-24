@@ -12,6 +12,7 @@ import {getRouterBasePath} from '@salesforce/pwa-kit-react-sdk/ssr/universal/uti
 // error component is rendered outside provider tree
 // !!! ----------------------------------------------- !!!
 import {screen, render} from '@testing-library/react'
+import {HelmetProvider} from 'react-helmet-async'
 
 jest.mock('@salesforce/pwa-kit-react-sdk/ssr/universal/utils', () => ({
     getRouterBasePath: jest.fn(() => '')
@@ -27,16 +28,30 @@ afterEach(() => {
 })
 
 test('Error renders without errors', () => {
-    expect(render(<Error />)).toBeDefined()
+    expect(
+        render(
+            <HelmetProvider>
+                <Error />
+            </HelmetProvider>
+        )
+    ).toBeDefined()
 })
 
 test('Error status 500', () => {
-    render(<Error status={500} />)
+    render(
+        <HelmetProvider>
+            <Error status={500} />
+        </HelmetProvider>
+    )
     expect(screen.getByRole('heading', {level: 2})).toHaveTextContent("This page isn't working")
 })
 
 test('Error status 500 with stack trace', () => {
-    render(<Error status={500} stack={'Stack trace error message'} />)
+    render(
+        <HelmetProvider>
+            <Error status={500} stack={'Stack trace error message'} />
+        </HelmetProvider>
+    )
     expect(screen.getByRole('heading', {level: 2})).toHaveTextContent("This page isn't working")
     expect(screen.getByText(/stack trace error message/i)).toBeInTheDocument()
 })
@@ -45,14 +60,22 @@ test('clicking logo navigates to home', () => {
     // Mock window.location.href
     delete window.location
     window.location = {href: ''}
-    render(<Error />)
+    render(
+        <HelmetProvider>
+            <Error />
+        </HelmetProvider>
+    )
     const logoBtn = screen.getByLabelText('logo')
     logoBtn.click()
     expect(window.location.href).toBe('/')
 })
 
 test('Contact Support button has correct link', () => {
-    render(<Error />)
+    render(
+        <HelmetProvider>
+            <Error />
+        </HelmetProvider>
+    )
     const supportBtn = screen.getByRole('link', {name: 'Contact Support'})
     expect(supportBtn).toHaveAttribute('href', 'https://help.salesforce.com/s/support')
     expect(supportBtn).toHaveAttribute('target', '_blank')
@@ -64,14 +87,22 @@ test('clicking Refresh the page calls window.location.reload', () => {
         value: {reload: reloadMock},
         writable: true
     })
-    render(<Error />)
+    render(
+        <HelmetProvider>
+            <Error />
+        </HelmetProvider>
+    )
     const refreshBtn = screen.getByRole('button', {name: 'Refresh the page'})
     refreshBtn.click()
     expect(reloadMock).toHaveBeenCalled()
 })
 
 test('renders custom error message', () => {
-    render(<Error message="Custom error occurred" />)
+    render(
+        <HelmetProvider>
+            <Error message="Custom error occurred" />
+        </HelmetProvider>
+    )
     expect(screen.getByText('Custom error occurred')).toBeInTheDocument()
 })
 
@@ -79,7 +110,11 @@ test('clicking logo navigates to base path when set', () => {
     delete window.location
     window.location = {href: ''}
     getRouterBasePath.mockReturnValueOnce('/my-base')
-    render(<Error />)
+    render(
+        <HelmetProvider>
+            <Error />
+        </HelmetProvider>
+    )
     const logoBtn = screen.getByLabelText('logo')
     logoBtn.click()
     expect(window.location.href).toBe('/my-base/')

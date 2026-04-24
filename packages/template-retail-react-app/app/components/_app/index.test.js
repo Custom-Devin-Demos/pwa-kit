@@ -106,7 +106,7 @@ describe('App', () => {
         })
     })
 
-    test('The localized hreflang links exist in the html head', () => {
+    test('The localized hreflang links exist in the html head', async () => {
         useMultiSite.mockImplementation(() => resultUseMultiSite)
         renderWithProviders(
             <App targetLocale={DEFAULT_LOCALE} defaultLocale={DEFAULT_LOCALE} messages={messages} />
@@ -116,6 +116,12 @@ describe('App', () => {
         const hrefLangLocales = mockConfig.app.sites[0].l10n.supportedLocales.map(
             (locale) => locale.id
         )
+        // react-helmet-async defers DOM updates via requestAnimationFrame
+        await waitFor(() => {
+            expect(
+                document.querySelectorAll('link[rel="alternate"][data-rh="true"]').length
+            ).toBeGreaterThan(0)
+        })
         const hreflangLinks = document.querySelectorAll('link[rel="alternate"][data-rh="true"]')
         const hasGeneralLocale = (link) =>
             link.getAttribute('hreflang') === DEFAULT_LOCALE.slice(0, 2)

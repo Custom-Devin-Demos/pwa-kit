@@ -121,7 +121,7 @@ describe('Storefront Preview Component', function () {
             expect(scripts[0].getAttribute('src')).toBe(
                 'https://runtime.commercecloud.com/cc/b2c/preview/preview.client.js'
             )
-            expect(scripts[0].getAttribute('async')).toBe('')
+            expect(scripts[0].getAttribute('async')).toBe('true')
             expect(scripts[0].getAttribute('type')).toBe('text/javascript')
         })
     })

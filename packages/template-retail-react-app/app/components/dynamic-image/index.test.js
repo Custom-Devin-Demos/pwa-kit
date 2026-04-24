@@ -9,6 +9,7 @@ import React from 'react'
 import DynamicImage from '@salesforce/retail-react-app/app/components/dynamic-image'
 import {Img} from '@salesforce/retail-react-app/app/components/shared/ui'
 import {renderWithProviders} from '@salesforce/retail-react-app/app/utils/test-utils'
+import {waitFor} from '@testing-library/react'
 import {isServer} from '@salesforce/retail-react-app/app/components/image/utils'
 
 const ATTR_NAME_MAP = {
@@ -198,7 +199,7 @@ describe('Dynamic Image Component', () => {
     })
 
     describe('loading="eager"', () => {
-        test('renders an image using the default "high" fetch priority', () => {
+        test('renders an image using the default "high" fetch priority', async () => {
             const {getByTestId, getAllByTitle} = renderWithProviders(
                 <DynamicImage
                     data-testid={'dynamic-image'}
@@ -256,8 +257,10 @@ describe('Dynamic Image Component', () => {
                 [240, 480].map((width) => `${src} ${width}w`).join(', ')
             )
 
+            await waitFor(() => {
+                expect(getHelmetLinkTags()).toHaveLength(5)
+            })
             const linkTags = getHelmetLinkTags()
-            expect(linkTags).toHaveLength(5)
             expect(linkTags).toStrictEqual([
                 {
                     rel: 'preload',
@@ -309,7 +312,7 @@ describe('Dynamic Image Component', () => {
 
         test.each(['high', 'low', 'auto'])(
             'renders an image using an explicit "%s" fetch priority',
-            (fetchPriority) => {
+            async (fetchPriority) => {
                 const {getByTestId, getAllByTitle} = renderWithProviders(
                     <DynamicImage
                         data-testid={'dynamic-image'}
@@ -328,9 +331,11 @@ describe('Dynamic Image Component', () => {
                 expect(elements[0]).toHaveAttribute('fetchpriority', fetchPriority)
                 expect(wrapper.firstElementChild).toBe(elements[0])
 
-                const linkTags = getHelmetLinkTags()
                 if (fetchPriority === 'high') {
-                    expect(linkTags).toHaveLength(1)
+                    await waitFor(() => {
+                        expect(getHelmetLinkTags()).toHaveLength(1)
+                    })
+                    const linkTags = getHelmetLinkTags()
                     expect(linkTags[0]).toStrictEqual({
                         as: 'image',
                         href: src,
@@ -338,7 +343,7 @@ describe('Dynamic Image Component', () => {
                         fetchPriority: 'high'
                     })
                 } else {
-                    expect(linkTags).toStrictEqual([])
+                    expect(getHelmetLinkTags()).toStrictEqual([])
                 }
             }
         )
@@ -364,7 +369,7 @@ describe('Dynamic Image Component', () => {
             expect(getHelmetLinkTags()).toStrictEqual([])
         })
 
-        test('renders an explicitly given image component', () => {
+        test('renders an explicitly given image component', async () => {
             const {getByTestId, getAllByTitle} = renderWithProviders(
                 <DynamicImage
                     data-testid={'dynamic-image'}
@@ -382,6 +387,9 @@ describe('Dynamic Image Component', () => {
             expect(elements).toHaveLength(1)
             expect(elements[0]).toHaveAttribute('fetchpriority', 'high')
             expect(wrapper.firstElementChild).toBe(elements[0])
+            await waitFor(() => {
+                expect(getHelmetLinkTags()).toHaveLength(1)
+            })
             expect(getHelmetLinkTags()).toStrictEqual([
                 {
                     as: 'image',
